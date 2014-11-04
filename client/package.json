@@ -1,0 +1,15 @@
+{
+  "name": "DevCom App",
+  "description": "developers communicator",
+  "version": "0.1",
+  "main": "app.html",
+  "window": {
+    "toolbar": false,
+    "frame": true,
+    "position": "center",
+    "width": 1000,
+    "height": 800,
+    "min_width": 600,
+    "min_height": 400
+  }
+}
