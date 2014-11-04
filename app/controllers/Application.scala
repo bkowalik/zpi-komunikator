@@ -16,7 +16,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def clientChannel = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
-    ClientTalkActor.props(out, manager)
+  def clientChannel(name: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
+    ClientTalkActor.props(name, out, manager)
   }
 }

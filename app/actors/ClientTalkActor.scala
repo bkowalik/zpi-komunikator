@@ -4,7 +4,7 @@ import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorRef, Props, Actor}
 import play.api.libs.json.JsValue
 
-class ClientTalkActor(out: ActorRef, manager: ActorRef) extends Actor with DeserializeMessages {
+class ClientTalkActor(name: String, out: ActorRef, manager: ActorRef) extends Actor with DeserializeMessages {
 
   def receive = deserialize {
     case json: JsValue => out ! json
@@ -20,5 +20,5 @@ class ClientTalkActor(out: ActorRef, manager: ActorRef) extends Actor with Deser
 }
 
 object ClientTalkActor {
-  def props(out: ActorRef, manager: ActorRef) = Props(classOf[ClientTalkActor], out, manager)
+  def props(name: String, out: ActorRef, manager: ActorRef) = Props(classOf[ClientTalkActor], name, out, manager)
 }
