@@ -10,7 +10,29 @@
     <script type="text/javascript" src="js/lib/angular.min.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
 
+    <script src="js/lib/socket.io.js"></script>
+
     <script>
+      //var socket = io.connect('http://localhost:9000/client');
+      var connection = new WebSocket('ws://localhost:9000/client');
+      connection.onopen = function(){
+         /*Send a small message to the console once the connection is established */
+         console.log('Connection open!');
+      }
+
+       setInterval(function () {
+            if (connection.readyState === 1) {
+                connection.send(JSON.stringify({name: "George", lastname: "Batalinski"}));
+            }
+        }, 1000);
+
+      connection.onmessage = function(e){
+         var server_message = e.data;
+         console.log(server_message);
+      }
+      connection.onerror = function (evt) {
+            console.log("ERR: " + evt.data);
+        };
     </script>
   </head>
   <body>
