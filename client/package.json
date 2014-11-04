@@ -1,7 +1,7 @@
 {
-  "name": "DevCom App",
+  "name": "DevComApp",
   "description": "developers communicator",
-  "version": "0.1",
+  "version": "0.0.1",
   "main": "app.html",
   "window": {
     "toolbar": false,
