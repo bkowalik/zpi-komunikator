@@ -14,7 +14,7 @@ object ZPIServer extends Build {
 
   lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 
-  lazy val deps = Seq(jdbc, anorm, cache, ws, slick, scalaTest) ++ akka
+  lazy val deps = Seq(jdbc, anorm, slick, scalaTest) ++ akka
 
   lazy val main = Project("zpi-server", file(".")).enablePlugins(play.PlayScala)
     .settings(
