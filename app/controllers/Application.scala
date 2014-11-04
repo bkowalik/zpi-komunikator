@@ -8,6 +8,8 @@ import play.api.mvc._
 
 object Application extends Controller {
 
+  import play.api.Play.current
+
   val manager = Akka.system.actorOf(Props[ClientsManager])
 
   def index = Action {

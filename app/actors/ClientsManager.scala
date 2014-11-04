@@ -6,7 +6,9 @@ class ClientsManager extends Actor {
 
   var clients = Map.empty[String, ActorRef]
 
-  def receive = ???
+  def receive = {
+    case _ => ???
+  }
 }
 
 object ClientsManager {

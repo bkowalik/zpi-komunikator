@@ -11,11 +11,11 @@ class ClientTalkActor(out: ActorRef, manager: ActorRef) extends Actor with Deser
   }
 
   override def preStart(): Unit = {
-    manager ! RegisterClient()
+    //manager ! RegisterClient()
   }
 
   override def postStop(): Unit = {
-    manager ! UnregisterClient()
+    //manager ! UnregisterClient()
   }
 }
 
