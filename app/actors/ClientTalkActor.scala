@@ -3,19 +3,20 @@ package actors
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorRef, Props, Actor}
 import play.api.libs.json.JsValue
+import protocol.{Envelope, TextMessage}
 
 class ClientTalkActor(name: String, out: ActorRef, manager: ActorRef) extends Actor with DeserializeMessages {
 
   def receive = deserialize {
-    case json: JsValue => out ! json
+    case message: Envelope => manager ! message
   }
 
   override def preStart(): Unit = {
-    //manager ! RegisterClient()
+    manager ! RegisterClient(name, self)
   }
 
   override def postStop(): Unit = {
-    //manager ! UnregisterClient()
+    manager ! UnregisterClient(name, self)
   }
 }
 

@@ -1,20 +1,26 @@
 package protocol
 
-import java.util.UUID
-
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 import play.api.libs.json._
 
 class TextMessageTest extends FlatSpec with Matchers {
 
-
-
   it should "serialize text message" in {
-    val message = TextMessage("foo", UUID.randomUUID(), "bazz")
+    val message = TextMessage("text message")
 
     val json = Json.toJson(message)
 
-    (json \ "source").as[String] should equal("foo")
+    (json \ "message") shouldBe JsString("text message")
+  }
+
+  it should "deserialize text message" in {
+    val serialized = JsObject(Seq(
+      "message" -> JsString("text message")
+    ))
+
+    val obj = Json.fromJson[TextMessage](serialized).get
+
+    obj.message shouldBe "text message"
   }
 
 }
