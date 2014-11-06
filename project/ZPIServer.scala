@@ -12,9 +12,15 @@ object ZPIServer extends Build {
 
   lazy val slick = "com.typesafe.slick" % "slick_2.11" % "2.1.0"
 
+  lazy val jodaTime = "joda-time" % "joda-time" % "2.5"
+
+  lazy val swagger = "com.wordnik" %% "swagger-play2" % "1.3.10"
+
   lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 
-  lazy val deps = Seq(jdbc, anorm, slick, scalaTest) ++ akka
+  lazy val playTest = "org.scalatestplus" %% "play" % "1.1.0" % "test"
+
+  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, swagger, scalaTest, playTest) ++ akka
 
   lazy val main = Project("zpi-server", file(".")).enablePlugins(play.PlayScala)
     .settings(

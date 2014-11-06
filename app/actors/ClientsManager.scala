@@ -5,7 +5,7 @@ import akka.actor.{ActorLogging, ActorRef, Actor}
 import protocol.Envelope
 import protocol.MessageTypes._
 
-class ClientsManager extends Actor with ActorLogging {
+class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
 
   var clients = Map.empty[String, Set[ActorRef]]
 
