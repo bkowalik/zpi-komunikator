@@ -36,9 +36,11 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
       }
     }
     case msg: Envelope => {
+      log.debug(s"Received message from ${msg.from} to ${msg.to}")
       msg.kind match {
         case TextMessageType => clients.get(msg.to.get).map { sockets =>
           sockets.foreach { actor =>
+            log.debug("Receiver is connected, redirecting")
             actor ! msg
           }
         } getOrElse {
