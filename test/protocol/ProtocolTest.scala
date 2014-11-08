@@ -2,20 +2,34 @@ package protocol
 
 import org.joda.time.DateTime
 import org.scalatest.{Matchers, FlatSpec}
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsNull, JsString, Json}
 import utils.DateTimeFormatters
 
 class ProtocolTest extends FlatSpec with Matchers {
 
   it should "serialize text message with envelope" in {
     val textMessage = TextMessage("message")
-    val envelope = Envelope(Option("foo"), Option("bar"), MessageTypes.TextMessageType, Json.toJson(textMessage))
+    val dateTime = new DateTime()
+    val envelope = new Envelope(Option("foo"), Option("bar"), MessageTypes.TextMessageType, Json.toJson(textMessage)) with EnvelopeTimeStamp {
+      val date = dateTime
+    }
 
     val json = Json.toJson(envelope)
 
     (json \ "from") shouldBe JsString("foo")
     (json \ "to") shouldBe JsString("bar")
     (json \ "kind") shouldBe JsString("TextMessageType")
+  }
+
+  it should "serialize envelope with date" in {
+    val dateTime = new DateTime()
+    val enveloper = new Envelope(Option("foo"), Option("bar"), MessageTypes.TextMessageType, JsNull) with EnvelopeTimeStamp {
+      val date  = dateTime
+    }
+
+    val json = Json.toJson(enveloper)
+
+    (json \ "date") shouldBe JsString(DateTimeFormatters.formatter.print(dateTime))
   }
 
   it should "deserialize text message in envelope" in {

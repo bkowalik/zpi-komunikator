@@ -17,7 +17,27 @@ object TextMessage {
 }
 
 object Envelope {
-  implicit val formatter = new Format[Envelope] {
+//  implicit val formatter = new Format[Envelope] {
+//    def reads(json: JsValue): JsResult[Envelope] = {
+//      val from = (json \ "from").asOpt[String]
+//      val to = (json \ "to").asOpt[String]
+//      val kind = (json \ "kind").as[MessageType]
+//      val payload = json \ "payload"
+//
+//      JsSuccess(Envelope(from, to, kind, payload))
+//    }
+//
+//    def writes(env: Envelope): JsValue = {
+//      val from = env.from.map(str => "from" -> JsString(str))
+//      val to = env.to.map(str => "to" -> JsString(str))
+//      JsObject((from :: to :: Nil).flatten ++ Seq(
+//        "kind" -> Json.toJson(env.kind),
+//        "payload" -> env.payload
+//      ))
+//    }
+//  }
+
+  implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
       val from = (json \ "from").asOpt[String]
       val to = (json \ "to").asOpt[String]
@@ -26,12 +46,15 @@ object Envelope {
 
       JsSuccess(Envelope(from, to, kind, payload))
     }
+  }
 
-    def writes(env: Envelope): JsValue = {
+  implicit val writes = new Writes[Envelope with EnvelopeTimeStamp] {
+    def writes(env: Envelope with EnvelopeTimeStamp): JsValue = {
       val from = env.from.map(str => "from" -> JsString(str))
       val to = env.to.map(str => "to" -> JsString(str))
       JsObject((from :: to :: Nil).flatten ++ Seq(
         "kind" -> Json.toJson(env.kind),
+        "date" -> JsString(DateTimeFormatters.formatter.print(env.date)),
         "payload" -> env.payload
       ))
     }
