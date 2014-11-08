@@ -9,6 +9,11 @@
     margin-bottom: 0;
 }
 
+pre {
+    padding: 0;
+}
+
+
 /* fill */
 
 /* chat */
@@ -44,6 +49,7 @@
 
 .panel-body {
     overflow-y: scroll;
+    max-height: 650px;
 }
 
 ::-webkit-scrollbar-track {

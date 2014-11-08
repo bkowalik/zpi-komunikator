@@ -33,11 +33,7 @@
         <div ng-repeat="conversation in conversations">
             <div id="{{conversation.id}}" ng-show="$index == actual_tab">
                 <div class="col-lg-8">
-                <pre>
-                    <code class="{{conversation.language}}" contenteditable="true" data-ng-model="conversation.code">
-{{conversation.code}}
-</code>
-                </pre>
+                    <pre><code class="{{conversation.language}}" contenteditable="true" data-ng-model="conversation.code">{{conversation.code}}</code></pre>
                 </div>
 
                 <div class="col-lg-4">
