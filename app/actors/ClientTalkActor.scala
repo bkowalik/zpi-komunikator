@@ -1,14 +1,22 @@
 package actors
 
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
-import akka.actor.{ActorRef, Props, Actor}
+import akka.actor.{ActorLogging, ActorRef, Props, Actor}
 import play.api.libs.json.JsValue
 import protocol.{Envelope, TextMessage}
 
-class ClientTalkActor(name: String, out: ActorRef, manager: ActorRef) extends Actor with DeserializeMessages {
+class ClientTalkActor(name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
 
   def receive = deserialize {
-    case message: Envelope => manager ! message
+    case message: Envelope => {
+      if(sender() == manager) {
+        log.debug(s"Message from: ${message.from}")
+        out ! message
+      } else {
+        log.debug(s"Message to: ${message.to}")
+        manager ! message
+      }
+    }
   }
 
   override def preStart(): Unit = {
