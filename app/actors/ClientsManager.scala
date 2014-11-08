@@ -36,12 +36,15 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
       }
     }
     case msg: Envelope => {
+      val newMsg = new Envelope(msg.from, msg.to, msg.kind, msg.payload) with EnvelopeTimeStamp {
+        val date = new DateTime()
+      }
       log.debug(s"Received message from ${msg.from} to ${msg.to}")
       msg.kind match {
         case TextMessageType => clients.get(msg.to.get).map { sockets =>
           sockets.foreach { actor =>
             log.debug("Receiver is connected, redirecting")
-            actor ! msg
+            actor ! newMsg
           }
         } getOrElse {
           val message = Json.fromJson[TextMessage](msg.payload).get
