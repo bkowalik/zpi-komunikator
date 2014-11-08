@@ -3,12 +3,12 @@ package actors
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorLogging, ActorRef, Props, Actor}
 import play.api.libs.json.{Json, JsValue}
-import protocol.{EnvelopeTimeStamp, Envelope, TextMessage}
+import protocol.{ESender, EDated, Envelope, TextMessage}
 
-class ClientTalkActor(name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
+class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
 
   def receive = deserialize {
-    case message: Envelope with EnvelopeTimeStamp => {
+    case message: Envelope with EDated => {
       out ! Json.toJson(message)
     }
     case message: Envelope => {
