@@ -8,4 +8,4 @@ sbt_args: -no-colors
 
 after_success:
     - echo ttt > test.txt
-    - scp -B -i zpi-server.pem test.txt ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:test.txt
+    - scp -B -i /home/travis/build/bkowalik/zpi-komunikator/zpi-server.pem test.txt ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:test.txt
