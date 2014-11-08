@@ -119,8 +119,10 @@ angular.module('developerCommunicator.editor', ['ngRoute'])
         ];
 
         $scope.init = function () {
-            $('pre code').each(function(i, block) {
-                hljs.highlightBlock(block);
+            angular.element(document).ready(function(){
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });
             });
         };
 
