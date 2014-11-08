@@ -7,6 +7,6 @@ sbt_args: -no-colors
 
 
 after_success:
-    - echo ttt > test.txt
+    - sbt dist
     - chmod 0400 /home/travis/build/bkowalik/zpi-komunikator/zpi-server.pem
-    - scp -o "StrictHostKeyChecking no" -i /home/travis/build/bkowalik/zpi-komunikator/zpi-server.pem test.txt ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:test.txt 
+    - scp -o "StrictHostKeyChecking no" -i /home/travis/build/bkowalik/zpi-komunikator/zpi-server.pem /home/travis/build/bkowalik/zpi-komunikator/target/universal/zpi-server-0.1.zip ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:zpi-server-0.1.zip 
