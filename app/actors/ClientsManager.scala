@@ -6,7 +6,7 @@ import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import akka.util.Timeout
 import org.joda.time.DateTime
 import play.api.libs.json.Json
-import protocol.{EnvelopeTimeStamp, TextMessage, Envelope}
+import protocol.{ESender, EDated, TextMessage, Envelope}
 import protocol.MessageTypes._
 import services.DatabaseService
 import akka.pattern.{ask, pipe}
@@ -35,20 +35,23 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
         clients
       }
     }
-    case msg: Envelope => {
-      val newMsg = new Envelope(msg.from, msg.to, msg.kind, msg.payload) with EnvelopeTimeStamp {
+    case msg: Envelope with ESender => {
+      val newMsg = new Envelope(msg.to, msg.kind, msg.payload) with EDated with ESender {
         val date = new DateTime()
+        val from = msg.from
       }
       log.debug(s"Received message from ${msg.from} to ${msg.to}")
       msg.kind match {
-        case TextMessageType => clients.get(msg.to.get).map { sockets =>
-          sockets.foreach { actor =>
-            log.debug("Receiver is connected, redirecting")
-            actor ! newMsg
+        case TextMessageType => msg.to.map { receiver =>
+          clients.get(receiver).map { sockets =>
+            sockets.foreach { actor =>
+              log.debug("Receiver is connected, redirecting")
+              actor ! newMsg
+            }
+          } getOrElse {
+            val message = Json.fromJson[TextMessage](msg.payload).get
+            database ! StoreMessage(newMsg)
           }
-        } getOrElse {
-          val message = Json.fromJson[TextMessage](msg.payload).get
-          database ! StoreMessage(msg.from.get, message.message)
         }
       }
     }
@@ -59,7 +62,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
     }
     case StoredMessages(to, messages) => {
       clients.get(to).map { channels =>
-        log.debug("Sending sotred messages")
+        log.debug("Sending stored messages")
       }
     }
     case unknown => log.error(s"Unknown message ${unknown.toString}")

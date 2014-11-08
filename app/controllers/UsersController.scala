@@ -14,7 +14,7 @@ import akka.pattern.ask
 import scala.concurrent.Future
 
 @Api(value = "/users", description = "Users operations")
-class UsersController(managerService: ManagerService) extends Controller with ControllerUtils {
+class UsersController(managerService: ManagerService) extends Controller with ControllerUtils with Secured {
 
   case class RegisterForm(username: String, password: String, email: String)
 

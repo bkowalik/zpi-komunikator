@@ -5,11 +5,18 @@ import play.api.libs.json._
 import protocol.MessageTypes.MessageType
 import utils.{DateTimeFormatters, EnumUtils}
 
-case class Envelope(from: Option[String], to: Option[String], kind: MessageType, payload: JsValue)
+case class Envelope(to: Set[String], kind: MessageType, payload: JsValue)
 
-trait EnvelopeTimeStamp {
+trait EDated {
+  this: Envelope =>
   val date: DateTime
 }
+
+trait ESender {
+  this: Envelope =>
+  val from: String
+}
+
 
 case class TextMessage(message: String)
 object TextMessage {
@@ -17,44 +24,26 @@ object TextMessage {
 }
 
 object Envelope {
-//  implicit val formatter = new Format[Envelope] {
-//    def reads(json: JsValue): JsResult[Envelope] = {
-//      val from = (json \ "from").asOpt[String]
-//      val to = (json \ "to").asOpt[String]
-//      val kind = (json \ "kind").as[MessageType]
-//      val payload = json \ "payload"
-//
-//      JsSuccess(Envelope(from, to, kind, payload))
-//    }
-//
-//    def writes(env: Envelope): JsValue = {
-//      val from = env.from.map(str => "from" -> JsString(str))
-//      val to = env.to.map(str => "to" -> JsString(str))
-//      JsObject((from :: to :: Nil).flatten ++ Seq(
-//        "kind" -> Json.toJson(env.kind),
-//        "payload" -> env.payload
-//      ))
-//    }
-//  }
-
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
-      val from = (json \ "from").asOpt[String]
-      val to = (json \ "to").asOpt[String]
+      val to = (json \ "to").asOpt[Set[String]].getOrElse(Set.empty)
       val kind = (json \ "kind").as[MessageType]
       val payload = json \ "payload"
 
-      JsSuccess(Envelope(from, to, kind, payload))
+      JsSuccess(Envelope(to, kind, payload))
     }
   }
 
-  implicit val writes = new Writes[Envelope with EnvelopeTimeStamp] {
-    def writes(env: Envelope with EnvelopeTimeStamp): JsValue = {
-      val from = env.from.map(str => "from" -> JsString(str))
-      val to = env.to.map(str => "to" -> JsString(str))
-      JsObject((from :: to :: Nil).flatten ++ Seq(
-        "kind" -> Json.toJson(env.kind),
+  implicit val writes = new Writes[Envelope with EDated] {
+    def writes(env: Envelope with EDated): JsValue = {
+      val sender = env match {
+        case a: ESender => Some(a.from)
+        case _ => None
+      }
+      JsObject(sender.map(from => "from" -> JsString(from)).toSeq ++ Seq(
+        "to" -> JsArray(env.to.map(JsString).toSeq),
         "date" -> JsString(DateTimeFormatters.formatter.print(env.date)),
+        "kind" -> Json.toJson(env.kind),
         "payload" -> env.payload
       ))
     }
