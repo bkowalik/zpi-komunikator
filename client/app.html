@@ -19,6 +19,7 @@
           nick : null,
           ws : null,
           init : function(nick){
+            this.nick = nick;
             this.ws = new WebSocket('ws://localhost:9000/client/'+nick);
             this.ws.onopen = function(){
               console.log('Connection open!');
@@ -61,6 +62,7 @@
         document.getElementById("send_message").addEventListener('click',function(){
           var message = document.getElementById("message").value;
           webSocket.sendMessage(message);
+          console.log(webSocket);
         });
 
       });
