@@ -68,4 +68,11 @@ class UsersController(managerService: ManagerService) extends Controller with Co
     )
   }
 
+  def checkAllOnline = Action.async { implicit request =>
+    managerService.checkAllOnline().map {
+      case list: Iterable[String] => Ok(Json.obj("online" -> Json.toJson(list)))
+      case _ => InternalServerError("Bad response")
+    }.recover{ case ex => InternalServerError(ex.toString) }
+  }
+
 }

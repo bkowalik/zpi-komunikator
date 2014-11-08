@@ -1,6 +1,6 @@
 package services
 
-import actors.ManagerProtocol.{FriendsList, CheckFriendsAvailability}
+import actors.ManagerProtocol.{GiveAllOnline, FriendsList, CheckFriendsAvailability}
 import akka.actor.ActorRef
 import akka.util.Timeout
 
@@ -14,5 +14,9 @@ class ManagerService(val manager: ActorRef) {
 
   def checkFriends(friends: Iterable[String]): Future[FriendsList] = {
     manager.ask(CheckFriendsAvailability(friends)).asInstanceOf[Future[FriendsList]]
+  }
+
+  def checkAllOnline(): Future[Iterable[String]] = {
+    manager.ask(GiveAllOnline).asInstanceOf[Future[Iterable[String]]]
   }
 }
