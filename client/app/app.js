@@ -70,7 +70,6 @@ angular.module('developerCommunicator', [
     })
     .controller('headerController', function ($scope, UserService) {
         $scope.user = UserService.currentUser();
-
         $scope.$watch(function () { return UserService.currentUser() }, function (newVal, oldVal) {
             if (typeof newVal !== 'undefined') {
                 $scope.user = UserService.currentUser();

@@ -9,7 +9,7 @@ angular.module('developerCommunicator.editor', ['ngRoute'])
         });
     }])
 
-    .controller('editorController', function ($scope) {
+    .controller('editorController', function ($scope, $modal) {
         $scope.conversations = [
             {
                 name : 'Conversation 1',
