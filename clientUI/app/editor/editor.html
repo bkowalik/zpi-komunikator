@@ -1,10 +1,10 @@
-<div class="raw">
+<div class="raw" ng-init="actual_tab = 0">
+{{actual_tab}}
     <div class="navbar navbar-inverse">
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
-                <li ng-repeat="conversation in conversations">
-
-                    <a href="#{{conversation.id}}" data-toggle="tab" aria-expanded="{{$first ? 'true' : 'false'}}">
+                <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}">
+                    <a href ng-click="$parent.actual_tab=$index" >
                         {{conversation.name}}
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
@@ -32,7 +32,7 @@
 
     <div id="myTabContent" class="tab-content">
         <div ng-repeat="conversation in conversations">
-            <div class="tab-pane fade " ng-class='{"active in":$first}' id="{{conversation.id}}">
+            <div id="{{conversation.id}}" ng-show="$index == actual_tab">
                 <div class="col-lg-8">
                 <pre>
                     <code class="{{conversation.language}}" contenteditable="true" data-ng-model="conversation.code">

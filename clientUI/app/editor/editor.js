@@ -14,7 +14,8 @@ angular.module('developerCommunicator.editor', ['ngRoute'])
             {
                 name : 'Conversation 1',
                 id : 'conv1',
-                code :  'public class Hello{\n' +
+                active : true,
+                code :  'public class Hello111{\n' +
                 '\tpublic static void main(String[] args) {\n' +
                 '\t\tSystem.out.print("Hello World");\n' +
                 '\t}\n' +
@@ -76,7 +77,8 @@ angular.module('developerCommunicator.editor', ['ngRoute'])
             {
                 name : 'Conversation 2',
                 id : 'conv2',
-                code :  'public class Hello{\n' +
+                active : false,
+                code :  'public class Hello222{\n' +
                 '\tpublic static void main(String[] args) {\n' +
                 '\t\tSystem.out.print("Hello World");\n' +
                 '\t}\n' +
