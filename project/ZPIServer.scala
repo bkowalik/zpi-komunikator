@@ -16,11 +16,15 @@ object ZPIServer extends Build {
 
   lazy val swagger = "com.wordnik" %% "swagger-play2" % "1.3.10"
 
+  lazy val macWireRuntime = "com.softwaremill.macwire" % "runtime_2.11" % "0.7.3"
+
+  lazy val macWire = "com.softwaremill.macwire" % "macros_2.11" % "0.7.3"
+
   lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 
   lazy val playTest = "org.scalatestplus" %% "play" % "1.1.0" % "test"
 
-  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, swagger, scalaTest, playTest) ++ akka
+  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, macWireRuntime, macWire, swagger, scalaTest, playTest) ++ akka
 
   lazy val main = Project("zpi-server", file(".")).enablePlugins(play.PlayScala)
     .settings(
@@ -28,4 +32,6 @@ object ZPIServer extends Build {
       scalaVersion := "2.11.3",
       libraryDependencies ++= deps
     )
+
+  System.setProperty("macwire.debug", "")
 }

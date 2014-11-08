@@ -1,19 +1,20 @@
 package controllers
 
-import java.lang.annotation.Annotation
-
+import actors.ManagerProtocol.FriendsList
 import com.wordnik.swagger.annotations._
-import play.api.data._
 import play.api.data.Forms._
+import play.api.data._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
-import protocol.{RestProtocol, SuccessMessage, FailureMessage}
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import protocol.{FailureMessage, RestProtocol, SuccessMessage}
+import services.ManagerService
+import akka.pattern.ask
 
 import scala.concurrent.Future
 
 @Api(value = "/users", description = "Users operations")
-object UsersController extends Controller {
+class UsersController(managerService: ManagerService) extends Controller with ControllerUtils {
 
   case class RegisterForm(username: String, password: String, email: String)
 
@@ -44,6 +45,27 @@ object UsersController extends Controller {
         Ok(Json.toJson(SuccessMessage("Account created")))
       }
     )}
+  }
+
+  case class CheckFriends(friends: List[String])
+
+  val checkFriendsForm = Form(
+    mapping(
+      "friends" -> list(text)
+    )(CheckFriends.apply)(CheckFriends.unapply)
+  )
+
+  def checkOnline = Action.async { implicit request =>
+    checkFriendsForm.bindFromRequest.fold(
+      formWithErrors => {
+        Future.successful(BadRequest(Json.toJson(FailureMessage(formWithErrors.errors))))
+      },
+      userData => {
+        managerService.checkFriends(userData.friends).map {
+          case FriendsList(friends) => Ok(Json.toJson(friends))
+        }.recover{ case ex => InternalServerError(ex.toString) }
+      }
+    )
   }
 
 }

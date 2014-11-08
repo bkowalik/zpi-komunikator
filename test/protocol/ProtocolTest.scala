@@ -9,8 +9,7 @@ class ProtocolTest extends FlatSpec with Matchers {
 
   it should "serialize text message with envelope" in {
     val textMessage = TextMessage("message")
-    val dateTime = new DateTime()
-    val envelope = Envelope(Option("foo"), Option("bar"), dateTime, MessageTypes.TextMessageType, Json.toJson(textMessage))
+    val envelope = Envelope(Option("foo"), Option("bar"), MessageTypes.TextMessageType, Json.toJson(textMessage))
 
     val json = Json.toJson(envelope)
 
@@ -26,7 +25,6 @@ class ProtocolTest extends FlatSpec with Matchers {
     val json = Json.obj(
       "from" -> JsString("foo"),
       "to" -> JsString("bar"),
-      "date" -> JsString(DateTimeFormatters.formatter.print(new DateTime())),
       "kind" -> JsString("TextMessageType"),
       "payload" -> jsonMessage
     )

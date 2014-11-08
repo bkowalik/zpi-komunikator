@@ -1,18 +1,16 @@
 package controllers
 
-import actors.{ClientTalkActor, ClientsManager}
-import akka.actor.Props
-import com.wordnik.swagger.annotations.{ApiOperation, Api}
-import play.api.libs.concurrent.Akka
+import actors.ClientTalkActor
+import akka.actor.ActorRef
+import com.wordnik.swagger.annotations.{Api, ApiOperation}
 import play.api.libs.json.JsValue
 import play.api.mvc._
+import services.ManagerService
 
 @Api(value = "/", description = "Main operations on websocks")
-object Application extends Controller {
-
+class CommunicationController(managerService: ManagerService) extends Controller {
   import play.api.Play.current
-
-  val manager = Akka.system.actorOf(Props[ClientsManager])
+  import managerService.manager
 
   @ApiOperation(nickname = "clientChannel", value = "Clients connection", notes = "Clients WebSocket")
   def clientChannel(name: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
