@@ -1,7 +1,7 @@
 package actors
 
 import actors.DatabaseProtocol.{StoredMessages, RecoverMessage, StoreMessage}
-import actors.ManagerProtocol.{CheckFriendsAvailability, UnregisterClient, RegisterClient}
+import actors.ManagerProtocol.{GiveAllOnline, CheckFriendsAvailability, UnregisterClient, RegisterClient}
 import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import akka.util.Timeout
 import org.joda.time.DateTime
@@ -71,6 +71,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
         log.debug("Sending stored messages")
       }
     }
+    case GiveAllOnline => sender() ! clients.keys
     case unknown => log.error(s"Unknown message ${unknown.toString}")
   }
 }
@@ -85,6 +86,7 @@ object ManagerProtocol {
   case class RegisterClient(name: String, channel: ActorRef) extends ManagerProtocol
   case class UnregisterClient(name: String, channel: ActorRef) extends ManagerProtocol
   case class CheckFriendsAvailability(friends: Iterable[String]) extends ManagerProtocol
+  case object GiveAllOnline extends ManagerProtocol
 
   case class FriendsList(friends: Map[String, Boolean]) extends ManagerProtocol
 }

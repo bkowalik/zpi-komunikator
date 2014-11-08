@@ -7,6 +7,7 @@ GET     /client/:name               @controllers.CommunicationController.clientC
 
 POST    /users/register             @controllers.UsersController.register
 PUT     /users/available            @controllers.UsersController.checkOnline
+GET     /users/available            @controllers.UsersController.checkAllOnline
 
 # Swagger
 GET     /api-docs                   controllers.ApiHelpController.getResources
