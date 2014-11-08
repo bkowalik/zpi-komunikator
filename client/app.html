@@ -12,61 +12,6 @@
 
     <script src="js/lib/socket.io.js"></script>
 
-    <script>
-      //var socket = io.connect('http://localhost:9000/client');
-      $( document ).ready(function() {
-        var webSocket = {
-          nick : null,
-          ws : null,
-          init : function(nick){
-            this.nick = nick;
-            this.ws = new WebSocket('ws://localhost:9000/client/'+nick);
-            this.ws.onopen = function(){
-              console.log('Connection open!');
-            };
-            this.ws.onmessage = function(e){
-              var server_message = e.data;
-              console.log(server_message);
-              console.log("aaa");
-            };
-            this.ws.onerror = function (evt) {
-              console.log("ERR: " + evt.data);
-            };
-          },
-          sendMessage : function(message){
-            if (this.ws.readyState === 1) {
-              this.ws.send(JSON.stringify({
-                      from: this.nick,
-                      to: 'test',
-                      kind: 'TextMessageType',
-                      payload: {
-                        message : message
-                      }
-              }));
-              console.log("poszło")
-            }
-            else{
-              console.log("not ready");
-            }
-          }
-        }
-
-        document.getElementById("register_user").addEventListener('click',function(){
-          var nick_input = document.getElementById("nick");
-          nick_input.disabled = true;
-          document.getElementById("register_user").disabled = true;
-          webSocket.init(nick_input.value);
-          console.log(webSocket.ws)
-        });
-
-        document.getElementById("send_message").addEventListener('click',function(){
-          var message = document.getElementById("message").value;
-          webSocket.sendMessage(message);
-          console.log(webSocket);
-        });
-
-      });
-    </script>
   </head>
   <body>
   <nav class="navbar navbar-default" role="navigation">

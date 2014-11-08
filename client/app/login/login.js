@@ -9,7 +9,9 @@ angular.module('developerCommunicator.login', ['ngRoute'])
         });
     }])
 
-    .controller('loginController', function ($scope) {
+    .controller('loginController', function ($scope, UserService) {
+        $scope.user = "";
+        $scope.password = "";
         $scope.init = function () {
             $('#toggle').click(function(e) {
                 e.preventDefault();
@@ -21,6 +23,13 @@ angular.module('developerCommunicator.login', ['ngRoute'])
                 $('div#form-toggle').toggle('500');
             });
         };
+
+        $scope.clickLogin = function(){
+            UserService.login($scope.login);
+            UserService.serverStarted(function(){
+                window.location.hash = "/editor";
+            });
+        }
 
         $scope.init();
     });
