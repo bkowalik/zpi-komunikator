@@ -1,20 +1,21 @@
 package controllers
 
 import actors.ManagerProtocol.FriendsList
+import actors.repo.UsersProtocol.{LoginFailure, LoginSuccessful}
 import com.wordnik.swagger.annotations._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{Security, Session, Action, Controller}
 import protocol.{FailureMessage, RestProtocol, SuccessMessage}
-import services.ManagerService
+import services.{UsersService, DatabaseService, ManagerService}
 import akka.pattern.ask
 
 import scala.concurrent.Future
 
 @Api(value = "/users", description = "Users operations")
-class UsersController(managerService: ManagerService) extends Controller with ControllerUtils with Secured {
+class UsersController(managerService: ManagerService, usersService: UsersService) extends Controller with ControllerUtils with Secured {
 
   case class RegisterForm(username: String, password: String, email: String)
 
@@ -68,11 +69,34 @@ class UsersController(managerService: ManagerService) extends Controller with Co
     )
   }
 
-  def checkAllOnline = Action.async { implicit request =>
+  def checkAllOnline = withAsyncAuth { username => implicit request =>
     managerService.checkAllOnline().map {
       case list: Iterable[String] => Ok(Json.obj("online" -> Json.toJson(list)))
       case _ => InternalServerError("Bad response")
     }.recover{ case ex => InternalServerError(ex.toString) }
   }
 
+  case class LoginForm(username: String, password: String)
+
+  val loginFormForm = Form(
+    mapping(
+      "username" -> nonEmptyText,
+      "password" -> nonEmptyText(6)
+    )(LoginForm.apply)(LoginForm.unapply)
+  )
+
+  def doLogin = Action.async { implicit request =>
+    loginFormForm.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(Json.toJson(FailureMessage(formWithErrors.errors)))),
+      loginData => {
+        usersService.login(loginData.username, loginData.password).map {
+          case LoginSuccessful => {
+            val sessionInfo = Session(Map(Security.username -> loginData.username))
+            Ok(Json.toJson(SuccessMessage(""))).withSession(sessionInfo)
+          }
+          case LoginFailure => Forbidden(Json.toJson(FailureMessage(Map("general" -> List("Wrong username or password")))))
+        }.recover{ case ex => InternalServerError(ex.toString) }
+      }
+    )
+  }
 }

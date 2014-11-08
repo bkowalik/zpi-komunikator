@@ -8,9 +8,7 @@ import scala.concurrent.Future
 import akka.pattern.ask
 import scala.concurrent.duration._
 
-class ManagerService(val manager: ActorRef) {
-
-  implicit val timeout: Timeout = 5 seconds
+class ManagerService(val manager: ActorRef) extends AsyncService {
 
   def checkFriends(friends: Iterable[String]): Future[FriendsList] = {
     manager.ask(CheckFriendsAvailability(friends)).asInstanceOf[Future[FriendsList]]

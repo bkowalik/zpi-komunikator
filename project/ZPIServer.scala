@@ -35,5 +35,5 @@ object ZPIServer extends Build {
       libraryDependencies ++= deps
     )
 
-  System.setProperty("macwire.debug", "")
+  //System.setProperty("macwire.debug", "")
 }
