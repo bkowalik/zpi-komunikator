@@ -1,13 +1,13 @@
 language: scala
 scala:
-- "2.10.4"
-- "2.11.1"
+    - "2.10.4"
+    - "2.11.1"
 jdk:
-- openjdk7
-- oraclejdk8
+    - openjdk7
+    - oraclejdk8
 sbt_args: -no-colors
 
 
 after_success:
-	"echo ttt > test.txt"
-	"scp -i zpi-server.pem test.txt ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:test.txt"
+    - echo ttt > test.txt
+    - scp -i zpi-server.pem test.txt ubuntu@ec2-54-77-232-158.eu-west-1.compute.amazonaws.com:test.txt
