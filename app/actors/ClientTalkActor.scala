@@ -6,15 +6,19 @@ import play.api.libs.json.{Json, JsValue}
 import protocol.{ESender, EDated, Envelope, TextMessage}
 
 class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
+  assert(out != null)
+  assert(manager != null)
 
   def receive = deserialize {
     case message: Envelope with EDated => {
+      log.debug(s"$name sending to output")
       out ! Json.toJson(message)
     }
     case message: Envelope => {
       log.debug(s"$name sending to manager")
       manager ! message
     }
+    case _ => log.warning("Unknown message")
   }
 
   override def preStart(): Unit = {

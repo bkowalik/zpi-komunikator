@@ -13,6 +13,7 @@ import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 
 class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
+  assert(database != null)
 
   implicit val timeout: Timeout = 5 seconds
 
@@ -21,34 +22,39 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
   def receive = {
     case RegisterClient(name, channel) => {
       clients = clients.get(name).map { channels =>
+        log.debug(s"Register $name")
         clients.updated(name, channels + channel)
       } getOrElse {
+        log.debug(s"Register $name")
         database ! RecoverMessage(name)
         clients.updated(name, Set(channel))
       }
     }
     case UnregisterClient(name, channel) => {
       clients = clients.get(name).map { channels =>
+        log.debug(s"Unregister $name")
         clients.updated(name, channels - channel)
       } getOrElse {
         log.warning(s"Unregister not registered client $name")
         clients
       }
     }
-    case msg: Envelope with ESender => {
+    case msg: Envelope  => {
+      log.debug("Get message")
       val newMsg = new Envelope(msg.to, msg.kind, msg.payload) with EDated with ESender {
         val date = new DateTime()
-        val from = msg.from
+        val from = "maniek"//msg.from
       }
-      log.debug(s"Received message from ${msg.from} to ${msg.to}")
+      log.debug(s"Received message from ${newMsg.from} to ${newMsg.to}")
       msg.kind match {
-        case TextMessageType => msg.to.map { receiver =>
+        case TextMessageType => newMsg.to.map { receiver =>
           clients.get(receiver).map { sockets =>
             sockets.foreach { actor =>
               log.debug("Receiver is connected, redirecting")
               actor ! newMsg
             }
           } getOrElse {
+            log.debug("Receiver is not connected")
             val message = Json.fromJson[TextMessage](msg.payload).get
             database ! StoreMessage(newMsg)
           }

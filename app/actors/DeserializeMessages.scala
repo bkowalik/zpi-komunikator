@@ -11,7 +11,7 @@ trait DeserializeMessages {
       new Envelope(env.to, env.kind, env.payload) with ESender {
         val from: String = name
       }
-    }
+    }.map(pf)
     case msg => pf(msg)
   }
 }
