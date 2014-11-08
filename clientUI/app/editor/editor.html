@@ -1,0 +1,91 @@
+<div class="raw">
+    <div class="navbar navbar-inverse">
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
+                <li ng-repeat="conversation in conversations">
+
+                    <a href="#{{conversation.id}}" data-toggle="tab" aria-expanded="{{$first ? 'true' : 'false'}}">
+                        {{conversation.name}}
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-new-window"></span> New conversation</a></li>
+                <li><a> | </a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-plus-sign"></span> Add member</a></li>
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user"></span>
+                        Change status <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><span class="glyphicon glyphicon-ok-sign"></span> Active</a></li>
+                        <li><a href="#"><span class="glyphicon glyphicon-question-sign"></span> Away from keyboard</a>
+                        </li>
+                        <li><a href="#"><span class="glyphicon glyphicon-remove-sign"></span> Busy</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="myTabContent" class="tab-content">
+        <div ng-repeat="conversation in conversations">
+            <div class="tab-pane fade " ng-class='{"active in":$first}' id="{{conversation.id}}">
+                <div class="col-lg-8">
+                <pre>
+                    <code class="{{conversation.language}}" contenteditable="true" data-ng-model="conversation.code">
+{{conversation.code}}
+</code>
+                </pre>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-comment"></span> Chat
+                        </div>
+                        <div class="panel-body">
+                            <ul class="chat">
+                                <li ng-repeat="entry in conversation.chat" ng-class-even="'left clearfix'" ng-class-odd="'right clearfix'">
+                                <span ng-class-even="'pull-left chat-img'" ng-class-odd="'pull-right chat-img'">
+                                    <img ng-src="http://placehold.it/50/{{entry.avatarColor}}/fff&text={{entry.avatarInitials}}" alt="User Avatar" class="img-circle"/>
+                                </span>
+
+                                    <div class="chat-body clearfix">
+                                        <div class="header">
+                                            <strong class="primary-font" ng-hide="$even">
+                                                {{entry.name}}
+                                            </strong>
+                                            <small ng-class-even="'pull-right text-muted'" ng-class-odd="'text-muted'">
+                                                <span class="glyphicon glyphicon-time"></span>{{entry.time}}
+                                            </small>
+                                            <strong class="pull-right primary-font" ng-hide="$odd">
+                                                {{entry.name}}
+                                            </strong>
+                                        </div>
+                                        <p>
+                                            {{entry.text}}
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="input-group">
+                                <input id="btn-input" type="text" class="form-control input-sm"
+                                       placeholder="Type your message here..."/>
+                                <span class="input-group-btn">
+                                <button class="btn btn-info btn-sm" id="btn-chat">
+                                    Send
+                                </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
