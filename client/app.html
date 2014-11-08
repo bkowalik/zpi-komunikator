@@ -14,25 +14,56 @@
 
     <script>
       //var socket = io.connect('http://localhost:9000/client');
-      var connection = new WebSocket('ws://localhost:9000/client');
-      connection.onopen = function(){
-         /*Send a small message to the console once the connection is established */
-         console.log('Connection open!');
-      }
-
-       setInterval(function () {
-            if (connection.readyState === 1) {
-                connection.send(JSON.stringify({name: "George", lastname: "Batalinski"}));
+      $( document ).ready(function() {
+        var webSocket = {
+          nick : null,
+          ws : null,
+          init : function(nick){
+            this.ws = new WebSocket('ws://localhost:9000/client/'+nick);
+            this.ws.onopen = function(){
+              console.log('Connection open!');
+            };
+            this.ws.onmessage = function(e){
+              var server_message = e.data;
+              console.log(server_message);
+              console.log("aaa");
+            };
+            this.ws.onerror = function (evt) {
+              console.log("ERR: " + evt.data);
+            };
+          },
+          sendMessage : function(message){
+            if (this.ws.readyState === 1) {
+              this.ws.send(JSON.stringify({
+                      from: this.nick,
+                      to: 'test',
+                      kind: 'TextMessageType',
+                      payload: {
+                        message : message
+                      }
+              }));
+              console.log("poszło")
             }
-        }, 1000);
+            else{
+              console.log("not ready");
+            }
+          }
+        }
 
-      connection.onmessage = function(e){
-         var server_message = e.data;
-         console.log(server_message);
-      }
-      connection.onerror = function (evt) {
-            console.log("ERR: " + evt.data);
-        };
+        document.getElementById("register_user").addEventListener('click',function(){
+          var nick_input = document.getElementById("nick");
+          nick_input.disabled = true;
+          document.getElementById("register_user").disabled = true;
+          webSocket.init(nick_input.value);
+          console.log(webSocket.ws)
+        });
+
+        document.getElementById("send_message").addEventListener('click',function(){
+          var message = document.getElementById("message").value;
+          webSocket.sendMessage(message);
+        });
+
+      });
     </script>
   </head>
   <body>
@@ -41,8 +72,17 @@
   </nav>
     <div id="content">
       <div id="inner-content">
-        <h2>Tescik</h2>
+        <h2>Test</h2>
+        <p>Najpierw się zaloguj a potem ślij wiadomości</p>
+        <input type="text" id="nick" /><button id="register_user">Loguj się z tym!</button><br />
+        <input type="text" id="message" /> <button id="send_message">Ślij wiadomość</button>
+
+        <div id="message_board"></div>
+        <span id="test"></span>
       </div>
     </div>
+    <script type="text/javascript">
+
+    </script>
   </body>
 </html>
