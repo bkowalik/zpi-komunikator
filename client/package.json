@@ -2,7 +2,7 @@
   "name": "DevComApp",
   "description": "developers communicator",
   "version": "0.0.1",
-  "main": "app.html",
+  "main": "app/index.html",
   "window": {
     "toolbar": false,
     "frame": true,
