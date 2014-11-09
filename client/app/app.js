@@ -79,5 +79,5 @@ angular.module('developerCommunicator', [
                 $scope.user = UserService.currentUser();
             }
         });
-    });;
+    });
         
