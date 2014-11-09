@@ -25,7 +25,7 @@
                                                 <span class="name" style="text-transform: capitalize">
                             {{contact.name.first != null && contact.name.last
                             ? contact.name.first + ' ' + contact.name.last
-                            : contact.login }} <br/>
+                            : contact.login }}
                         </span><span class="name online">(online)<br/></span>
                         <span ng-if="contact.location != null" class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip" title="{{contact.location}}"></span>
                         <span ng-if="contact.location != null" class="text-muted">{{contact.location}}<br/></span>
