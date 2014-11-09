@@ -87,5 +87,5 @@ angular.module('developerCommunicator', [
               window.location.hash="/editor"
           }
         });
-    });;
+    });
         
