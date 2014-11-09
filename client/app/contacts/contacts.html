@@ -22,11 +22,11 @@
                         <img ng-src="{{contact.picture.large}}" alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" />
                     </div>
                     <div class="col-xs-12 col-sm-9">
-                        <span class="name" style="text-transform: capitalize">
+                                                <span class="name" style="text-transform: capitalize">
                             {{contact.name.first != null && contact.name.last
                             ? contact.name.first + ' ' + contact.name.last
                             : contact.login }} <br/>
-                        </span>
+                        </span><span class="name online">(online)<br/></span>
                         <span ng-if="contact.location != null" class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip" title="{{contact.location}}"></span>
                         <span ng-if="contact.location != null" class="text-muted">{{contact.location}}<br/></span>
                         <span ng-if="contact.phone != null" class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip" title="{{contact.phone}}"></span>
