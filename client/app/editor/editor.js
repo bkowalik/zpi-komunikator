@@ -35,19 +35,18 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             }];
         $rootScope.contactsOffline = [
             {
-                "name": {"title": "miss", "first": "violet", "last": "hernandez"},
                 "location": "D12",
-                "username": "organicpanda958",
+                "login": "organicpanda958",
                 "phone": "(540)-841-4132",
                 "picture": {
                     "large": "http://api.randomuser.me/portraits/women/76.jpg",
                 }
             },
             {
-                "name": {"title": "mrs", "first": "harper", "last": "medina"},
+                "name": {"title": "mrs", "first": "harper"},
                 "location": "D34",
                 "email": "harper.medina98@example.com",
-                "username": "bigpanda573",
+                "login": "bigpanda573",
                 "picture": {
                     "large": "http://api.randomuser.me/portraits/women/30.jpg",
                 }
