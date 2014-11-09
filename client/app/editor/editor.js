@@ -187,6 +187,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         };
 
         $scope.startConversation = function(users, convName){
+            users = _.keys(users);
             $scope.conversations.push({
                 name: convName,
                 id : _.uniqueId('conv_'),
@@ -196,14 +197,29 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 '\t}\n' +
                 '}\n',
                 language : 'java',
-                contributors : users
+                contributors : users,
+                chat: []
             });
             $scope.reloadHighlight();
 
             UserService.addMessageListener(users, function(resp){
                 console.log(resp);
+                $scope.receiveMessage(users,resp);
             });
-        }
+        };
+
+        $scope.receiveMessage = function(users, resp){
+            var conversation = _.find($scope.conversations, function(conv){ return conv.contributors == users});
+            console.log(resp);
+            console.log(users);
+            conversation.chat.push({
+                name : resp.from,
+                avatarInitials : "AM",
+                avatarColor : "AAA",
+                text : resp.payload.message,
+                time : resp.date
+            });
+        };
 
         $scope.init();
 
@@ -215,22 +231,27 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 }
             });
 
-            modalInstance.result.then(function (selected, name) {
-                $scope.startConversation(selected, name);
+            modalInstance.result.then(function (obj) {
+                $scope.startConversation(obj.selected, obj.name);
             });
         };
     })
 
     .controller('ModalInstanceCtrl', function ($scope, $modalInstance, $http) {
     $scope.checked = [];
-    $scope.name = "";
+    $scope.name = null;
 
-    $http.get('http://54.77.232.158:9000/users/available').success(function(data) {
-        $scope.users = data.online;
-      });
+    //$http.get('http://54.77.232.158:9000/users/available').success(function(data) {
+        //$scope.users = data.online;
+      //});
 
+    $scope.users = ["testowy1","testowy2","testowy3"];
     $scope.start = function () {
-        $modalInstance.close($scope.checked,$scope.name);
+        var obj = {
+            selected: $scope.checked,
+            name: $scope.name
+        }
+        $modalInstance.close(obj);
     };
 
     $scope.cancel = function () {

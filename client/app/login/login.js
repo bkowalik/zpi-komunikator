@@ -25,15 +25,18 @@ angular.module('developerCommunicator.login', ['ngRoute'])
         };
 
         $scope.clickLogin = function(){
-            //$http.post('http://54.77.232.158:9000/users/login',{username: $scope.login,password:$scope.password})
-                 //.success(function(data, status, headers, config) {
+            $http.defaults.withCredentials = true;
+            $http.post('http://54.77.232.158:9000/users/login',{username: $scope.login,password:$scope.password},{withCredentials: true})
+                 .success(function(data, status, headers, config) {
+                    console.log(headers);
+                    console.log($cookies);
                     UserService.login($scope.login,$scope.password);
                     UserService.serverStarted(function(){
                         window.location.hash = "/editor";
                     });
-                  //}).error(function(data, status, headers, config){
-                    //console.log("Error when login");
-                  //});
+                  }).error(function(data, status, headers, config){
+                    console.log("Error when login");
+                  });
         }
         $scope.init();
     });
