@@ -208,6 +208,18 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             });
         };
 
+        $scope.sendMessage = function(conversation){
+            UserService.sendMessage($scope.message, conversation.contributors);
+            conversation.chat.push({
+                name : UserService.currentUser(),
+                avatarInitials : "AM",
+                avatarColor : "AAA",
+                text : $scope.message,
+                time : (new Date()).toLocaleTimeString()
+            });
+            $scope.message = "";
+        };
+
         $scope.receiveMessage = function(users, resp){
             var conversation = _.find($scope.conversations, function(conv){ return conv.contributors == users});
             console.log(resp);
