@@ -31,5 +31,5 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
 }
 
 object ClientTalkActor {
-  def props(name: String, out: ActorRef, manager: ActorRef) = Props(classOf[ClientTalkActor], name, out, manager)
+  def props(name: String, manager: ActorRef, out: ActorRef) = Props(classOf[ClientTalkActor], name, out, manager)
 }

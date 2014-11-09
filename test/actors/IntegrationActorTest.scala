@@ -25,8 +25,8 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
     val dbMock = mock[DatabaseService]
     when(dbMock.database).thenReturn(dummyInstance)
     val manager = system.actorOf(ClientsManager.props(dbMock))
-    val maniek = system.actorOf(ClientTalkActor.props("zenek", dummyInstance, manager))
-    val zenek = system.actorOf(ClientTalkActor.props("maniek", self, manager))
+    val maniek = system.actorOf(ClientTalkActor.props("zenek", manager, dummyInstance))
+    val zenek = system.actorOf(ClientTalkActor.props("maniek", manager, self))
     val msg = TextMessage("hiho!")
     val jsonMsg = Json.obj(
       "message" -> "hiho!"

@@ -56,7 +56,7 @@ class UsersController(managerService: ManagerService, usersService: UsersService
     )(CheckFriends.apply)(CheckFriends.unapply)
   )
 
-  def checkOnline = Action.async { implicit request =>
+  def checkOnline = withAsyncAuth { username => implicit request =>
     checkFriendsForm.bindFromRequest.fold(
       formWithErrors => {
         Future.successful(BadRequest(Json.toJson(FailureMessage(formWithErrors.errors))))
@@ -98,5 +98,9 @@ class UsersController(managerService: ManagerService, usersService: UsersService
         }.recover{ case ex => InternalServerError(ex.toString) }
       }
     )
+  }
+
+  def logout = withAuth { username => request =>
+    Ok(Json.toJson(SuccessMessage(""))).withNewSession
   }
 }

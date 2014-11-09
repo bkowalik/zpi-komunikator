@@ -9,6 +9,7 @@ POST    /users/register             @controllers.UsersController.register
 PUT     /users/available            @controllers.UsersController.checkOnline
 GET     /users/available            @controllers.UsersController.checkAllOnline
 POST    /users/login                @controllers.UsersController.doLogin
+GET     /users/logout               @controllers.UsersController.logout
 
 # Swagger
 GET     /api-docs                   controllers.ApiHelpController.getResources
