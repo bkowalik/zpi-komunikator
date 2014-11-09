@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h3 class="modal-title">Start new conversation</h3>
+</div>
+<div class="modal-body" style="overflow: hidden;">
+    <div class="form-group">
+        <input type="email" class="form-control" placeholder="Set conversation name" ng-model="name">
+    </div>
+    <p>Select user(s) to start conversation:</p> 
+    <ul class="list-group">
+        <li ng-repeat="user in users" class="list-group-item btn-group col-sm-12">
+                <label class="btn btn-default disabled col-sm-9" >{{user}}</label>
+                <label class="btn btn-success col-sm-3" ng-class="checked[user]? 'btn-danger': 'btn-success'" ng-model="checked[user]" btn-checkbox>{{checked[user]?'Remove':'Add'}}</label>
+        </li>
+    </ul>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="start()">Start conversation</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>

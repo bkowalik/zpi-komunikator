@@ -53,13 +53,13 @@ angular.module('developerCommunicator', [
             }
           },
         logout: function() { 
-            return currentUser!=null;
+            return currentUser==null;
          },
         addMessageListener: function(from, callback){
           message_callbacks[from] = callback;
         },
         isLoggedIn: function() {  
-
+          return !!currentUser;
         },
         serverStarted: function(callback){
             var interval = setInterval(function () {
@@ -78,6 +78,14 @@ angular.module('developerCommunicator', [
             if (typeof newVal !== 'undefined') {
                 $scope.user = UserService.currentUser();
             }
+        });
+        $scope.$on('$routeChangeStart', function (event) {
+          if (!UserService.isLoggedIn()) {
+              window.location.hash="/login"
+          }
+          else {
+              window.location.hash="/editor"
+          }
         });
     });;
         
