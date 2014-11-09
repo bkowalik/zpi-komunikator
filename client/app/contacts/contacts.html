@@ -17,18 +17,18 @@
             </div>
 
             <ul class="list-group" id="contact-list">
-                <li class="list-group-item" ng-repeat="contact in contacts | orderBy: 'name.last' | filter: flterKey">
+                <li class="list-group-item" ng-repeat="contact in contacts | orderBy: 'name.first' | filter: filterKey">
                     <div class="col-xs-12 col-sm-3">
                         <img ng-src="{{contact.picture.large}}" alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" />
                     </div>
                     <div class="col-xs-12 col-sm-9">
                         <span class="name" style="text-transform: capitalize">{{contact.name.first}} {{contact.name.last}}</span><br/>
                         <span class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip" title="{{contact.location}}"></span>
-                        <span class="visible-xs"> <span class="text-muted">{{contact.location}}</span><br/></span>
+                        <span class="text-muted">{{contact.location}}</span><br/>
                         <span class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip" title="{{contact.phone}}"></span>
-                        <span class="visible-xs"> <span class="text-muted">{{contact.phone}}</span><br/></span>
+                        <span class="text-muted">{{contact.phone}}</span><br/>
                         <span class="glyphicon glyphicon-comment text-muted c-info" data-toggle="tooltip" title="{{contact.email}}"></span>
-                        <span class="visible-xs"> <span class="text-muted">{{contact.email}}</span><br/></span>
+                        <span class="text-muted">{{contact.email}}</span><br/>
                     </div>
                     <div class="clearfix"></div>
                 </li>

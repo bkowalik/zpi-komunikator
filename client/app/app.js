@@ -71,6 +71,7 @@ angular.module('developerCommunicator', [
         currentUser: function() { return currentUser; }
       };
     })
+
     .controller('headerController', function ($scope, UserService) {
         $scope.user = UserService.currentUser();
         $scope.$watch(function () { return UserService.currentUser() }, function (newVal, oldVal) {
