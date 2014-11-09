@@ -39,11 +39,11 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
         clients
       }
     }
-    case msg: Envelope  => {
+    case msg: Envelope with ESender => {
       log.debug("Get message")
       val newMsg = new Envelope(msg.to, msg.kind, msg.payload) with EDated with ESender {
         val date = new DateTime()
-        val from = "maniek"//msg.from
+        val from = msg.from
       }
       log.debug(s"Received message from ${newMsg.from} to ${newMsg.to}")
       msg.kind match {

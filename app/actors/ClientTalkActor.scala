@@ -14,7 +14,7 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
       log.debug(s"$name sending to output")
       out ! Json.toJson(message)
     }
-    case message: Envelope => {
+    case message: Envelope with ESender => {
       log.debug(s"$name sending to manager")
       manager ! message
     }

@@ -25,14 +25,14 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
     val dbMock = mock[DatabaseService]
     when(dbMock.database).thenReturn(dummyInstance)
     val manager = system.actorOf(ClientsManager.props(dbMock))
-    val maniek = system.actorOf(ClientTalkActor.props("maniek", dummyInstance, manager))
-    val zenek = system.actorOf(ClientTalkActor.props("zenek", self, manager))
+    val maniek = system.actorOf(ClientTalkActor.props("zenek", dummyInstance, manager))
+    val zenek = system.actorOf(ClientTalkActor.props("maniek", self, manager))
     val msg = TextMessage("hiho!")
     val jsonMsg = Json.obj(
       "message" -> "hiho!"
     )
     val jsonEnv = Json.obj(
-      "to" -> Set("zenek"),
+      "to" -> Set("maniek"),
       "kind" -> MessageTypes.TextMessageType,
       "payload" -> jsonMsg
     )
@@ -41,9 +41,9 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
 
     val received = receiveOne(5 seconds).asInstanceOf[JsObject]
 
-    (received \ "to").as[Set[String]] shouldBe Set("zenek")
+    (received \ "to").as[Set[String]] shouldBe Set("maniek")
     (received \ "kind").as[String] shouldBe MessageTypes.TextMessageType.toString
-    (received \ "from").as[String] shouldBe "maniek"
+    (received \ "from").as[String] shouldBe "zenek"
   }
 
   override protected def afterAll(): Unit = system.shutdown()
