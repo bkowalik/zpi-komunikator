@@ -94,7 +94,7 @@ class UsersController(managerService: ManagerService, usersService: UsersService
             val sessionInfo = Session(Map(Security.username -> loginData.username))
             Ok(Json.toJson(SuccessMessage(""))).withSession(sessionInfo)
           }
-          case LoginFailure => Forbidden(Json.toJson(FailureMessage(Map("general" -> List("Wrong username or password")))))
+          case LoginFailure => Forbidden(Json.obj("general" -> List("Wrong username or password")))
         }.recover{ case ex => InternalServerError(ex.toString) }
       }
     )
