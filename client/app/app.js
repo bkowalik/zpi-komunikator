@@ -83,9 +83,6 @@ angular.module('developerCommunicator', [
           if (!UserService.isLoggedIn()) {
               window.location.hash="/login"
           }
-          else {
-              window.location.hash="/editor"
-          }
         });
     });
         
