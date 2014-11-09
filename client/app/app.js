@@ -13,7 +13,7 @@ angular.module('developerCommunicator', [
         $routeProvider
             .otherwise({redirectTo: '/login'});
     }]).
-    factory( 'UserService', function() {
+    factory( 'UserService', function($rootScope) {
       var currentUser = null;
       var ws = null;
       var ws_flags = [];
@@ -30,10 +30,18 @@ angular.module('developerCommunicator', [
             ws.onmessage = function(e){
               var server_message = e.data;
               console.log(server_message);
-              (message_callbacks[server_message.from])(server_message);
+              console.log(message_callbacks.length)
+              if(message_callbacks[server_message.from]==null){
+                $rootScope.startConversation(server_message.from, server_message.message);
+              }else{
+                (message_callbacks[server_message.from])(server_message);
+              }
             };
             ws.onerror = function (evt) {
               console.log("ERR: " + evt.data);
+            };
+            ws.onclose = function (evt) {
+              console.log("close");
             };
           },
         sendMessage : function(message, to){

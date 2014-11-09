@@ -187,6 +187,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         };
 
         $scope.startConversation = function(users, convName){
+            console.log(users);
             users = _.keys(users);
             if($rootScope.conversations === undefined) $rootScope.conversations = [];
             $rootScope.conversations.push({
@@ -204,10 +205,11 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             $scope.reloadHighlight();
 
             UserService.addMessageListener(users, function(resp){
-                console.log(resp);
                 $scope.receiveMessage(users,resp);
             });
         };
+
+        $rootScope.startConversation  = $scope.startConversation; //antywzorce ^^
 
         $scope.sendMessage = function(conversation){
             UserService.sendMessage($scope.message, conversation.contributors);
@@ -254,9 +256,9 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
     $scope.checked = [];
     $scope.name = null;
 
-    //$http.get('http://54.77.232.158:9000/users/available').success(function(data) {
-        //$scope.users = data.online;
-      //});
+    $http.get('http://54.77.232.158:9000/users/available').success(function(data) {
+        $scope.users = data.online;
+      });
 
     $scope.users = ["testowy1","testowy2","testowy3"];
     $scope.start = function () {
