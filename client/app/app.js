@@ -5,7 +5,6 @@ angular.module('developerCommunicator', [
     'ui.bootstrap',
     'ngRoute',
     'developerCommunicator.editor',
-    'developerCommunicator.contacts',
     'developerCommunicator.settings',
     'developerCommunicator.history',
     'developerCommunicator.login'
