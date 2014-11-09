@@ -65,8 +65,8 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         $scope.init();
     })
 
-    .controller('editorController', function ($scope, $modal, UserService) {
-        $scope.conversations = [
+    .controller('editorController', function ($scope, $modal, UserService, $rootScope) {
+        //$rootScope.conversations = [
             // {
             //     name : 'Conversation 1',
             //     id : 'conv1',
@@ -172,7 +172,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             //         }
             //     ]
             // }
-        ];
+        //];
 
         $scope.init = function () {
             $scope.reloadHighlight();
@@ -188,7 +188,8 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
 
         $scope.startConversation = function(users, convName){
             users = _.keys(users);
-            $scope.conversations.push({
+            if($rootScope.conversations === undefined) $rootScope.conversations = [];
+            $rootScope.conversations.push({
                 name: convName,
                 id : _.uniqueId('conv_'),
                 code :  'public class Hello222{\n' +
@@ -221,7 +222,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         };
 
         $scope.receiveMessage = function(users, resp){
-            var conversation = _.find($scope.conversations, function(conv){ return conv.contributors == users});
+            var conversation = _.find($rootScope.conversations, function(conv){ return conv.contributors == users});
             console.log(resp);
             console.log(users);
             conversation.chat.push({

@@ -3,7 +3,7 @@
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}">
-                    <a href ng-click="$parent.actual_tab=$index" >
+                    <a href ng-click="$parent.actual_tab=$index">
                         {{conversation.name}}
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
