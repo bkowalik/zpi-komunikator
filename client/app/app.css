@@ -97,3 +97,11 @@ pre {
     padding: 5px 10px;
     font-size: 1.25em;
 }
+
+.offline {
+    background-color: #eeeeee;
+}
+
+.online {
+    color: #109d24;
+}

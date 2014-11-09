@@ -16,12 +16,27 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         );
     }])
 
-    .controller('contactsController', function ($scope) {
-        $scope.contacts = [
+    .controller('contactsController', function ($scope, $rootScope) {
+        $rootScope.contactsOnline = [
+            {
+                "name": {"title": "mr", "first": "nathaniel", "last": "baker"},
+                "location": "B45",
+                "phone": "(304)-407-6713",
+                "picture": {
+                    "large": "http://api.randomuser.me/portraits/men/0.jpg",
+                }
+            },
+            {
+                "name": {"title": "mr", "first": "liam", "last": "robinson"},
+                "phone": "(803)-333-2499",
+                "picture": {
+                    "large": "http://api.randomuser.me/portraits/men/33.jpg",
+                }
+            }];
+        $rootScope.contactsOffline = [
             {
                 "name": {"title": "miss", "first": "violet", "last": "hernandez"},
                 "location": "D12",
-                "email": "violet.hernandez61@example.com",
                 "username": "organicpanda958",
                 "phone": "(540)-841-4132",
                 "picture": {
@@ -33,27 +48,8 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 "location": "D34",
                 "email": "harper.medina98@example.com",
                 "username": "bigpanda573",
-                "phone": "(681)-715-2202",
                 "picture": {
                     "large": "http://api.randomuser.me/portraits/women/30.jpg",
-                }
-            },
-            {
-                "name": {"title": "mr", "first": "nathaniel", "last": "baker"},
-                "location": "B45",
-                "email": "nathaniel.baker87@example.com",
-                "phone": "(304)-407-6713",
-                "picture": {
-                    "large": "http://api.randomuser.me/portraits/men/0.jpg",
-                }
-            },
-            {
-                "name": {"title": "mr", "first": "liam", "last": "robinson"},
-                "location": "J56",
-                "email": "liam.robinson47@example.com",
-                "phone": "(803)-333-2499",
-                "picture": {
-                    "large": "http://api.randomuser.me/portraits/men/33.jpg",
                 }
             }];
 
