@@ -2,6 +2,7 @@
 
 // Declare app level module which depends on views, and components
 angular.module('developerCommunicator', [
+    'ui.bootstrap',
     'ngRoute',
     'developerCommunicator.editor',
     'developerCommunicator.contacts',
@@ -17,11 +18,12 @@ angular.module('developerCommunicator', [
       var currentUser = null;
       var ws = null;
       var ws_flags = [];
+      var message_callbacks = [];
 
       return {
         login: function(nick){
             currentUser = nick;
-            ws = new WebSocket('ws://localhost:9000/client/'+nick);
+            ws = new WebSocket('wss://54.77.232.158/client/'+nick);
             ws.onopen = function(){
                 console.log("open");
               ws_flags['started']=true;
@@ -29,7 +31,7 @@ angular.module('developerCommunicator', [
             ws.onmessage = function(e){
               var server_message = e.data;
               console.log(server_message);
-              console.log("aaa");
+              (message_callbacks[server_message.from])(server_message);
             };
             ws.onerror = function (evt) {
               console.log("ERR: " + evt.data);
@@ -53,12 +55,14 @@ angular.module('developerCommunicator', [
         logout: function() { 
             return currentUser!=null;
          },
+        addMessageListener: function(from, callback){
+          message_callbacks[from] = callback;
+        },
         isLoggedIn: function() {  
 
         },
         serverStarted: function(callback){
             var interval = setInterval(function () {
-                console.log("open222");
                 if(ws_flags['started']){
                     clearInterval(interval);
                     callback();

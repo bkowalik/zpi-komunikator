@@ -1,7 +1,7 @@
 <!DOCTYPE html>
   <head>
     <title>DevCom</title>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="app/bower_components/jquery/dist/jquery.js"></script>
     <script>
       //var socket = io.connect('http://localhost:9000/client');
       $( document ).ready(function() {
@@ -11,8 +11,10 @@
           init : function(nick){
             this.nick = nick;
             this.ws = new WebSocket('wss://54.77.232.158/client/'+nick);
+            //this.ws = new WebSocket('ws://localhost:9000/client/'+nick);
             this.ws.onopen = function(){
               console.log('Connection open!');
+              document.getElementById("test").innerHTML = "TADA";
             };
             this.ws.onmessage = function(e){
               var server_message = e.data;
