@@ -7,7 +7,7 @@ import play.api.libs.json._
 import protocol.MessageTypes.MessageType
 import utils.{DateTimeFormatters, EnumUtils}
 
-case class Envelope(to: Set[String], uuid: Option[UUID], kind: MessageType, payload: JsValue)
+case class Envelope(to: Set[String], uuid: Option[String], kind: MessageType, payload: JsValue)
 
 trait EDated {
   this: Envelope =>
@@ -39,7 +39,7 @@ object Envelope {
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
       val to = (json \ "to").asOpt[Set[String]].getOrElse(Set.empty)
-      val uuid = (json \ "id").asOpt[UUID]
+      val uuid = (json \ "id").asOpt[String]
       val kind = (json \ "kind").as[MessageType]
       val payload = json \ "payload"
 

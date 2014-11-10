@@ -7,7 +7,7 @@ import org.scalatest.{Matchers, BeforeAndAfterAll, FlatSpecLike}
 import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, JsValue, Json}
 import protocol._
-import services.{ManagerService, DatabaseService}
+import services.ManagerService
 import org.mockito.Mockito._
 import scala.concurrent.duration._
 
@@ -23,11 +23,9 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
   val dummyInstance = system.actorOf(Props[DummyActor])
 
   it should "all work together" in {
-    val dbMock = mock[DatabaseService]
-    when(dbMock.database) thenReturn(dummyInstance)
-    val manager = system.actorOf(ClientsManager.props(dbMock))
+    val manager = system.actorOf(ClientsManager.props())
     val managerServiceMock = mock[ManagerService]
-    when(managerServiceMock.getWorker) thenReturn(manager)
+    when(managerServiceMock.getWorker) thenReturn manager
 
     val maniek = system.actorOf(ClientTalkActor.props("zenek", managerServiceMock, dummyInstance))
     val zenek = system.actorOf(ClientTalkActor.props("maniek", managerServiceMock, self))

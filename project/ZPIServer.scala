@@ -20,13 +20,13 @@ object ZPIServer extends Build {
 
   lazy val macWire = "com.softwaremill.macwire" % "macros_2.11" % "0.7.3"
 
-  lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
+  lazy val scalaBcrypt = "com.github.t3hnar" % "scala-bcrypt_2.11" % "2.4"
 
-  lazy val playTest = "org.scalatestplus" % "play_2.11" % "1.2.0" % "test"
+  lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 
   lazy val mockito = "org.mockito" % "mockito-all" % "1.9.0" % "test"
 
-  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, macWireRuntime, macWire, swagger, scalaTest, playTest, mockito) ++ akka
+  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, macWireRuntime, macWire, scalaBcrypt, swagger, scalaTest, mockito) ++ akka
 
   lazy val main = Project("zpi-server", file(".")).enablePlugins(play.PlayScala)
     .settings(

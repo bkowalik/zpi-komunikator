@@ -3,10 +3,11 @@ package util
 import akka.util.Timeout
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FlatSpec}
-import play.api.Play
+import play.api.{GlobalSettings, Play}
 import play.api.http.{Status, HeaderNames}
 import play.api.mvc.Results
 import play.api.test._
+import utils.Global
 import scala.concurrent.duration._
 
 abstract class BaseControllerTest extends FlatSpec
@@ -26,8 +27,12 @@ abstract class BaseControllerTest extends FlatSpec
 }
 
 object Application {
+  lazy val fakeGlobal = new GlobalSettings {
+
+  }
+
   lazy val app: FakeApplication = {
-    val localApp = FakeApplication(additionalConfiguration = Map.empty)
+    val localApp = FakeApplication(additionalConfiguration = Map.empty, withGlobal = Some(Global))
     Play.start(localApp)
     localApp
   }

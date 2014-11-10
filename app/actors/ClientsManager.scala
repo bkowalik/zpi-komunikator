@@ -8,12 +8,10 @@ import org.joda.time.DateTime
 import play.api.libs.json.Json
 import protocol._
 import protocol.MessageTypes._
-import services.DatabaseService
 import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 
-class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
-  assert(database != null)
+class ClientsManager() extends Actor with ActorLogging {
 
   implicit val timeout: Timeout = 5 seconds
 
@@ -26,7 +24,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
         clients.updated(name, channels + channel)
       } getOrElse {
         log.debug(s"Register $name")
-        database ! RecoverMessage(name)
+        //database ! RecoverMessage(name)
         self ! UserLoggedIn(name)
         clients.updated(name, Set(channel))
       }
@@ -62,7 +60,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
           } getOrElse {
             log.debug("Receiver is not connected")
             val message = Json.fromJson[TextMessage](msg.payload).get
-            database ! StoreMessage(newMsg)
+            //database ! StoreMessage(newMsg)
           }
         }
       }
@@ -107,7 +105,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
 }
 
 object ClientsManager {
-  def props(database: DatabaseService): Props = Props(classOf[ClientsManager], database.database)
+  def props(): Props = Props(classOf[ClientsManager])
   case class Client(name: String, channel: ActorRef)
 }
 

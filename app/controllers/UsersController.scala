@@ -9,7 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import play.api.mvc.{Security, Session, Action, Controller}
 import protocol.{FailureMessage, RestProtocol, SuccessMessage}
-import services.{UsersService, DatabaseService, ManagerService}
+import services.{UsersService, ManagerService}
 import akka.pattern.ask
 
 import scala.concurrent.Future
