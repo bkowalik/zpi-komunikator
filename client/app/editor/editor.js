@@ -66,120 +66,24 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
     })
 
     .controller('editorController', function ($scope, $modal, UserService, ConversationService) {
-        //$rootScope.conversations = [
-            // {
-            //     name : 'Conversation 1',
-            //     id : 'conv1',
-            //     active : true,
-            //     code :  'public class Hello111{\n' +
-            //     '\tpublic static void main(String[] args) {\n' +
-            //     '\t\tSystem.out.print("Hello World");\n' +
-            //     '\t}\n' +
-            //     '}\n',
-            //     language : 'java',
-            //     contributors : ['Piotr Brudny', 'Piotr Florczyk', 'Aleksander Maj'],
-            //     chat : [
-            //         {
-            //             name : 'Piotr Brudny',
-            //             avatarInitials : "PB",
-            //             avatarColor : "ABC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:45'
-            //         },
-            //         {
-            //             name : 'Piotr Florczyk',
-            //             avatarInitials : "PF",
-            //             avatarColor : "FBC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:46'
-            //         },
-            //         {
-            //             name : 'Piotr Brudny',
-            //             avatarInitials : "PB",
-            //             avatarColor : "ABC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:45'
-            //         },
-            //         {
-            //             name : 'Aleksander Maj',
-            //             avatarInitials : "AM",
-            //             avatarColor : "AAA",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:48'
-            //         },
-            //         {
-            //             name : 'Piotr Florczyk',
-            //             avatarInitials : "PF",
-            //             avatarColor : "FBC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:52'
-            //         },
-            //         {
-            //             name : 'Piotr Brudny',
-            //             avatarInitials : "PB",
-            //             avatarColor : "ABC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:55'
-            //         },
-            //         {
-            //             name : 'Piotr Florczyk',
-            //             avatarInitials : "PF",
-            //             avatarColor : "FBC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:58'
-            //         }
-            //     ]
-            // },
-            // {
-            //     name : 'Conversation 2',
-            //     id : 'conv2',
-            //     active : false,
-            //     code :  'public class Hello222{\n' +
-            //     '\tpublic static void main(String[] args) {\n' +
-            //     '\t\tSystem.out.print("Hello World");\n' +
-            //     '\t}\n' +
-            //     '}\n',
-            //     language : 'java',
-            //     contributors : ['Piotr Florczyk', 'Aleksander Maj'],
-            //     chat : [
-            //         {
-            //             name : 'Aleksander Maj',
-            //             avatarInitials : "AM",
-            //             avatarColor : "AAA",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:48'
-            //         },
-            //         {
-            //             name : 'Piotr Florczyk',
-            //             avatarInitials : "PF",
-            //             avatarColor : "FBC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:52'
-            //         },
-            //         {
-            //             name : 'Piotr Brudny',
-            //             avatarInitials : "PB",
-            //             avatarColor : "ABC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:55'
-            //         },
-            //         {
-            //             name : 'Piotr Florczyk',
-            //             avatarInitials : "PF",
-            //             avatarColor : "FBC",
-            //             text : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.',
-            //             time : '14:58'
-            //         }
-            //     ]
-            // }
-        //];
-
-        $scope.$watch(function () { return ConversationService.conversations }, function (newVal, oldVal) {
-            console.log(ConversationService.conversations);
+        $scope.$watch(function () { return ConversationService.getConversations() }, function (newVal, oldVal) {
             if (typeof newVal !== 'undefined') {
-                $scope.conversations = ConversationService.conversations;
+                $scope.conversations = ConversationService.getConversations();
             }
         });
+
+        $scope.updateConversation = function(convs){
+            $scope.$apply(function(){
+                $scope.conversations = convs;
+            });
+          };
+
+        // $scope.$on('newConv', function(event,data) {
+        //     console.log(data);
+        //     $scope.conversations = data;
+        // });
+
+        ConversationService.registerObserverCallback($scope.updateConversation);
 
         $scope.init = function () {
             $scope.reloadHighlight();
@@ -201,7 +105,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         $scope.init();
 
         $scope.openModal = function () {
-            console.log(ConversationService.conversations);
+            console.log(ConversationService.getConversations());
             var modalInstance = $modal.open({
               templateUrl: 'editor/modals/convModal.html',
               controller: 'ModalInstanceCtrl',

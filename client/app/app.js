@@ -36,7 +36,7 @@ angular.module('developerCommunicator', [
               switch(server_message["kind"]){
                 case "TextMessageType":
                   console.log("Message send back to ConvService");
-                  if(message_callbacks[server_message.id]==null){
+                  if(!message_callbacks[server_message.id]){
                     newConversationHandler(server_message);
                   }else{
                     (message_callbacks[server_message.id])(server_message);
@@ -92,10 +92,11 @@ angular.module('developerCommunicator', [
         }
       };
     })
-    .service( 'ConversationService', function(UserService) {
-      this.conversations = [];
-      this.receiveMessage = function(message){
-            var conversation = _.find(this.conversations, function(conv){ return conv.id == message.id});
+    .factory( 'ConversationService', function(UserService) {
+      var conversations = [];
+      var observerCallbacks = [];
+      var receiveMessage = function(message){
+            var conversation = _.find(conversations, function(conv){ return conv.id == message.id});
             conversation.chat.push({
                 name : message.from,
                 avatarInitials : "AM",
@@ -103,39 +104,15 @@ angular.module('developerCommunicator', [
                 text : message.payload.message,
                 time : message.date
             });
+
+            notifyObservers();
         };
-      this.setConversation =  function(message){
-            console.log(this);
-            var conversation = {
-                name: "temp",
-                id : message.id,
-                code :  'public class Hello222{\n' +
-                '\tpublic static void main(String[] args) {\n' +
-                '\t\tSystem.out.print("Hello World");\n' +
-                '\t}\n' +
-                '}\n',
-                language : 'java',
-                contributors : message.to,
-                chat: []
-            };
-
-            this.conversations.push(conversation);
-            this.receiveMessage(message);
-
-            angular.element(document).ready(function(){
-                $('pre code').each(function(i, block) {
-                    hljs.highlightBlock(block);
-                });
-            });
-
-            UserService.addMessageListener(conversation, this.receiveMessage.bind(this));
-        };
-      UserService.setNewConversationHandler(this.setConversation.bind(this));
-      this.startConversation = function(users, convName){
-          users = _.keys(users);
+      var setConversation =  function(message){
+          var users = message.to;
+          users.push(UserService.currentUser());
           var conversation = {
-              name: convName,
-              id : guid(),
+              name: message.payload.message,
+              id : message.id,
               code :  'public class Hello222{\n' +
               '\tpublic static void main(String[] args) {\n' +
               '\t\tSystem.out.print("Hello World");\n' +
@@ -145,29 +122,83 @@ angular.module('developerCommunicator', [
               contributors : users,
               chat: []
           };
-          this.conversations.push(conversation);
+          conversations.push(conversation);
+
+          notifyObservers();
 
           angular.element(document).ready(function(){
               $('pre code').each(function(i, block) {
                   hljs.highlightBlock(block);
               });
           });
-
-          UserService.addMessageListener(conversation, this.receiveMessage);
-      },
-      this.sendMessage = function(message, conversation){
-          conversation.chat.push({
-              name : UserService.currentUser(),
-              avatarInitials : "AM",
-              avatarColor : "AAA",
-              text : message,
-              time : (new Date()).toLocaleTimeString()
-          });
-          UserService.sendMessage(message, conversation.contributors, conversation.id);
-      },
-      this. getConversations = function(){
-        return conversations;
+          UserService.addMessageListener(conversation.id, receiveMessage);
+        };
+      var notifyObservers = function(){
+        angular.forEach(observerCallbacks, function(callback){
+          callback(conversations);
+        });
       };
+      UserService.setNewConversationHandler(setConversation);
+      return {
+        registerObserverCallback : function(callback){
+          observerCallbacks.push(callback);
+        },
+        startConversation : function(users, convName){
+            users = _.keys(users);
+            users.push(UserService.currentUser());
+            var conversation = {
+                name: convName,
+                id : guid(),
+                code :  'public class Hello222{\n' +
+                '\tpublic static void main(String[] args) {\n' +
+                '\t\tSystem.out.print("Hello World");\n' +
+                '\t}\n' +
+                '}\n',
+                language : 'java',
+                contributors : users,
+                chat: []
+            };
+            conversations.push(conversation);
+
+            angular.element(document).ready(function(){
+                $('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                });
+            });
+            UserService.sendMessage(convName, conversation.contributors, conversation.id);
+            UserService.addMessageListener(conversation.id, this.receiveMessage);
+        },
+        sendMessage : function(message, conversation){
+            conversation.chat.push({
+                name : UserService.currentUser(),
+                avatarInitials : "AM",
+                avatarColor : "AAA",
+                text : message,
+                time : (new Date()).toLocaleTimeString()
+            });
+            UserService.sendMessage(message, conversation.contributors, conversation.id);
+        },
+        receiveMessage : function(message){
+            var conversation = _.find(conversations, function(conv){ return conv.id == message.id});
+            conversation.chat.push({
+                name : message.from,
+                avatarInitials : "AM",
+                avatarColor : "AAA",
+                text : message.payload.message,
+                time : message.date
+            });
+            notifyObservers();
+        },
+        notifyObservers : function(){
+          angular.forEach(observerCallbacks, function(callback){
+            callback(conversations);
+          });
+        },
+        getConversations : function(){
+          return conversations;
+        }
+      }
+
     })
 
     .controller('headerController', function ($scope, UserService) {
