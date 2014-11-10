@@ -18,4 +18,8 @@ class UsersRepository(database: Database) {
   def createUser(username: String, password: String, email: String) = database.withTransaction { implicit session=>
     users.insert(User(Option(UUID.randomUUID()), username, password, email)).run == 1
   }
+
+  def allUsers = database.withTransaction { implicit session =>
+    users.map(_.username).list
+  }
 }

@@ -21,6 +21,8 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
       case true => UserCreationSuccess
       case false => UserCreationFailure
     }.pipeTo(sender())
+
+    case AllUsers => allUsers.pipeTo(sender())
   }
 
   def login(username: String, password: String): Future[Boolean] = Future {
@@ -29,6 +31,10 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
 
   def createAcc(username: String, password: String, email: String): Future[Boolean] = Future {
     usersRepository.createUser(username, password, email)
+  }
+
+  def allUsers: Future[Iterable[String]] = Future {
+    usersRepository.allUsers
   }
 }
 
@@ -42,6 +48,8 @@ sealed trait UsersProtocol
 object UsersProtocol {
   case class Login(username: String, password: String) extends UsersProtocol
   case class CreateUser(username: String, password: String, email: String) extends UsersProtocol
+
+  case object AllUsers extends UsersProtocol
 
   sealed trait UserCreationStatus
   case object UserCreationSuccess extends UserCreationStatus

@@ -1,7 +1,7 @@
 package controllers
 
 import org.mockito.Mockito._
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.{JsArray, JsString, Json}
 import play.api.test.FakeRequest
 import util.BaseControllerTest
 import utils.Application
@@ -38,5 +38,15 @@ class UsersControllerTest extends BaseControllerTest {
 
     status(result) shouldBe OK
     contentAsJson(result) shouldBe Json.obj("status" -> "OK", "message" -> "Account created")
+  }
+
+  it should "list all users" in {
+    val request = FakeRequest(GET, "/users/all").withSession("username" -> "zenek")
+
+    val result = route(request).get
+
+    status(result) shouldBe OK
+    val json = contentAsJson(result)
+    (json \ "users") shouldBe a[JsArray]
   }
 }

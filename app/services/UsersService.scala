@@ -1,7 +1,7 @@
 package services
 
 import actors.repo.UsersProtocol
-import actors.repo.UsersProtocol.{UserCreationStatus, CreateUser, LoginStatus, Login}
+import actors.repo.UsersProtocol._
 import akka.actor.ActorRef
 import akka.pattern.ask
 
@@ -12,7 +12,11 @@ class UsersService(usersActor: ActorRef) extends AsyncService {
     usersActor.ask(Login(username, password)).asInstanceOf[Future[LoginStatus]]
   }
 
-  def createUser(username: String, password: String, email: String) = {
+  def createUser(username: String, password: String, email: String): Future[UserCreationStatus] = {
     usersActor.ask(CreateUser(username, password, email)).asInstanceOf[Future[UserCreationStatus]]
+  }
+
+  def allUsers: Future[Iterable[String]] = {
+    usersActor.ask(AllUsers).asInstanceOf[Future[Iterable[String]]]
   }
 }

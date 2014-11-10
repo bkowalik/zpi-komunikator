@@ -105,4 +105,10 @@ class UsersController(managerService: ManagerService, usersService: UsersService
   def logout = withAuth { username => request =>
     Ok(Json.toJson(SuccessMessage(""))).withNewSession
   }
+
+  def allUsers = withAsyncAuth { username => request =>
+    usersService.allUsers.map {
+      case list: Iterable[String] => Ok(Json.obj("users" -> list))
+    }.recover { case ex => InternalServerError(ex.toString) }
+  }
 }

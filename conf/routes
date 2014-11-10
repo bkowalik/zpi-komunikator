@@ -10,6 +10,7 @@ PUT     /users/available            @controllers.UsersController.checkOnline
 GET     /users/available            @controllers.UsersController.checkAllOnline
 POST    /users/login                @controllers.UsersController.doLogin
 GET     /users/logout               @controllers.UsersController.logout
+GET     /users/all                  @controllers.UsersController.allUsers
 
 # Swagger
 GET     /api-docs                   controllers.ApiHelpController.getResources
