@@ -1,11 +1,13 @@
 package protocol
 
+import java.util.UUID
+
 import org.joda.time.DateTime
 import play.api.libs.json._
 import protocol.MessageTypes.MessageType
 import utils.{DateTimeFormatters, EnumUtils}
 
-case class Envelope(to: Set[String], kind: MessageType, payload: JsValue)
+case class Envelope(to: Set[String], uuid: Option[UUID], kind: MessageType, payload: JsValue)
 
 trait EDated {
   this: Envelope =>
@@ -37,10 +39,11 @@ object Envelope {
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
       val to = (json \ "to").asOpt[Set[String]].getOrElse(Set.empty)
+      val uuid = (json \ "id").asOpt[UUID]
       val kind = (json \ "kind").as[MessageType]
       val payload = json \ "payload"
 
-      JsSuccess(Envelope(to, kind, payload))
+      JsSuccess(Envelope(to, uuid, kind, payload))
     }
   }
 
@@ -50,12 +53,16 @@ object Envelope {
         case a: ESender => Some(a.from)
         case _ => None
       }
-      JsObject(sender.map(from => "from" -> JsString(from)).toSeq ++ Seq(
-        "to" -> JsArray(env.to.map(JsString).toSeq),
-        "date" -> JsString(DateTimeFormatters.formatter.print(env.date)),
-        "kind" -> Json.toJson(env.kind),
-        "payload" -> env.payload
-      ))
+      JsObject(
+        sender.map(from => "from" -> JsString(from)).toSeq ++
+        env.uuid.map(id => "id" -> Json.toJson(id)).toSeq ++
+        Seq(
+          "to" -> JsArray(env.to.map(JsString).toSeq),
+          "date" -> JsString(DateTimeFormatters.formatter.print(env.date)),
+          "kind" -> Json.toJson(env.kind),
+          "payload" -> env.payload
+        )
+      )
     }
   }
 }

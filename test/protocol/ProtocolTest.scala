@@ -10,7 +10,7 @@ class ProtocolTest extends FlatSpec with Matchers {
   it should "serialize text message with envelope" in {
     val textMessage = TextMessage("message")
     val dateTime = new DateTime()
-    val envelope = new Envelope(Set("bar"), MessageTypes.TextMessageType, Json.toJson(textMessage)) with EDated with ESender {
+    val envelope = new Envelope(Set("bar"), None, MessageTypes.TextMessageType, Json.toJson(textMessage)) with EDated with ESender {
       val date = dateTime
       val from = "foo"
     }
@@ -24,7 +24,7 @@ class ProtocolTest extends FlatSpec with Matchers {
 
   it should "serialize envelope with date without sender" in {
     val dateTime = new DateTime()
-    val enveloper = new Envelope(Set("foo"), MessageTypes.TextMessageType, JsNull) with EDated {
+    val enveloper = new Envelope(Set("foo"), None, MessageTypes.TextMessageType, JsNull) with EDated {
       val date  = dateTime
     }
 

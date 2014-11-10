@@ -47,7 +47,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
     }
     case msg: Envelope with ESender => {
       log.debug("Get message")
-      val newMsg = new Envelope(msg.to, msg.kind, msg.payload) with EDated with ESender {
+      val newMsg = new Envelope(msg.to, msg.uuid, msg.kind, msg.payload) with EDated with ESender {
         val date = new DateTime()
         val from = msg.from
       }
@@ -86,7 +86,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
   def notifyUserLoggedIn(com: UserLoggedIn) = {
     clients.filterKeys(_ != com.username).map {
       case (name, actors) => {
-        val envelope = new Envelope(Set(name), MessageTypes.UserLoggedInType, Json.toJson(com)) with EDated {
+        val envelope = new Envelope(Set(name), None, MessageTypes.UserLoggedInType, Json.toJson(com)) with EDated {
           val date: DateTime = new DateTime()
         }
         actors foreach (_ ! envelope)
@@ -97,7 +97,7 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
   def notifyUserLoggedOut(com: UserLoggedOut) = {
     clients.filterKeys(_ != com.username).map {
       case (name, actors) => {
-        val envelope = new Envelope(Set(name), MessageTypes.UserLoggedOutType, Json.toJson(com)) with EDated {
+        val envelope = new Envelope(Set(name), None, MessageTypes.UserLoggedOutType, Json.toJson(com)) with EDated {
           val date: DateTime = new DateTime()
         }
         actors foreach (_ ! envelope)

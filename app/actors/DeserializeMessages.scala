@@ -8,7 +8,7 @@ trait DeserializeMessages {
 
   def deserialize(pf: PartialFunction[Any, Unit]): PartialFunction[Any, Unit] = {
     case json: JsValue => Json.fromJson[Envelope](json).map { env =>
-      new Envelope(env.to, env.kind, env.payload) with ESender {
+      new Envelope(env.to, env.uuid, env.kind, env.payload) with ESender {
         val from: String = name
       }
     }.map(pf)
