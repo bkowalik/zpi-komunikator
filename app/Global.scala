@@ -18,8 +18,8 @@ object Global extends WithFilters(CORSFilter()) with GlobalSettings with Macwire
     utils.Application.database.withTransaction { implicit session =>
       users.ddl.create
 
-      users.insert(User(Option(UUID.randomUUID()), "maniek", "maniek123", "maniek@onet.pl"))
-      users.insert(User(Option(UUID.randomUUID()), "zenek", "zenek123", "zenek@onet.pl"))
+      users.insert(User(Option(UUID.randomUUID()), "maniek", "$2a$10$BPHHd7ed0HX5j9MF7zjrh.vKypt5LnoSyv3uxqWlWDpcxYVrY3bp6", "maniek@onet.pl"))
+      users.insert(User(Option(UUID.randomUUID()), "zenek", "$2a$10$BPHHd7ed0HX5j9MF7zjrh.L5E3r2VOihnZUf/K2ayujOwdB5mpVkq", "zenek@onet.pl"))
     }
   }
 
