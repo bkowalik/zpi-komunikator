@@ -51,7 +51,7 @@ class ClientsManager() extends Actor with ActorLogging {
       }
       log.debug(s"Received message from ${newMsg.from} to ${newMsg.to}")
       msg.kind match {
-        case TextMessageType => newMsg.to.map { receiver =>
+        case TextMessageType => newMsg.to.filter(_ != newMsg.from).map { receiver =>
           clients.get(receiver).map { sockets =>
             sockets.foreach { actor =>
               log.debug("Receiver is connected, redirecting")
@@ -78,7 +78,7 @@ class ClientsManager() extends Actor with ActorLogging {
     case com: UserLoggedIn => notifyUserLoggedIn(com)
     case com: UserLoggedOut => notifyUserLoggedOut(com)
     case GiveAllOnline => sender() ! clients.keys
-    case unknown => log.error(s"Unknown message ${unknown.toString}")
+    case unknown => log.warning(s"Unknown message ${unknown.toString}")
   }
 
   def notifyUserLoggedIn(com: UserLoggedIn) = {

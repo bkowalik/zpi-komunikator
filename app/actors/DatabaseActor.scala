@@ -8,7 +8,7 @@ class DatabaseActor extends Actor with ActorLogging {
   def receive = {
     case store: StoreMessage => log.debug(store.toString)
     case req: RecoverMessage => log.debug(req.toString)
-    case _ => log.debug("Unrecognized message")
+    case unknown => log.warning(s"Unrecognized message: ${unknown.toString}")
   }
 }
 

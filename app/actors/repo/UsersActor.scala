@@ -1,7 +1,6 @@
 package actors.repo
 
 import akka.actor.{Props, Actor, ActorLogging}
-import models.Users
 import com.github.t3hnar.bcrypt._
 import repositories.UsersRepository
 import scala.concurrent.Future
@@ -23,6 +22,8 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
     }.pipeTo(sender())
 
     case AllUsers => allUsers.pipeTo(sender())
+
+    case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }
 
   def login(username: String, password: String): Future[Boolean] = Future {

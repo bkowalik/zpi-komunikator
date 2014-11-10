@@ -19,7 +19,7 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
       log.debug(s"$name sending to manager")
       manager ! message
     }
-    case _ => log.warning("Unknown message")
+    case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }
 
   override def preStart(): Unit = {
