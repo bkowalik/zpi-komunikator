@@ -1,12 +1,11 @@
-package utils
-
 import java.util.UUID
 
 import com.softwaremill.macwire.Macwire
 import filters.CORSFilter
 import models.{User, Users}
+import play.api.GlobalSettings
 import play.api.mvc.WithFilters
-import play.api.{Application, GlobalSettings}
+import utils.Application
 
 object Global extends WithFilters(CORSFilter()) with GlobalSettings with Macwire {
 

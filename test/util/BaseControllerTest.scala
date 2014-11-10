@@ -7,7 +7,6 @@ import play.api.{GlobalSettings, Play}
 import play.api.http.{Status, HeaderNames}
 import play.api.mvc.Results
 import play.api.test._
-import utils.Global
 import scala.concurrent.duration._
 
 abstract class BaseControllerTest extends FlatSpec
@@ -32,7 +31,7 @@ object Application {
   }
 
   lazy val app: FakeApplication = {
-    val localApp = FakeApplication(additionalConfiguration = Map.empty, withGlobal = Some(Global))
+    val localApp = FakeApplication(additionalConfiguration = Map.empty)
     Play.start(localApp)
     localApp
   }
