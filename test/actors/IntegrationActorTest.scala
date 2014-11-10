@@ -48,5 +48,5 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
     (received \ "from").as[String] shouldBe "zenek"
   }
 
-  override protected def afterAll(): Unit = system.awaitTermination()
+  override protected def afterAll(): Unit = TestKit.shutdownActorSystem(system)
 }
