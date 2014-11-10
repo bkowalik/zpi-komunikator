@@ -23,6 +23,16 @@ object TextMessage {
   implicit val formatter = Json.format[TextMessage]
 }
 
+case class UserLoggedIn(username: String)
+object UserLoggedIn {
+  implicit val writes = Json.writes[UserLoggedIn]
+}
+
+case class UserLoggedOut(username: String)
+object UserLoggedOut {
+  implicit val writes = Json.writes[UserLoggedOut]
+}
+
 object Envelope {
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
@@ -54,6 +64,10 @@ object MessageTypes extends Enumeration {
   type MessageType = Value
 
   val TextMessageType = Value("TextMessageType")
+
+  val UserLoggedInType = Value("UserLoggedInType")
+
+  val UserLoggedOutType = Value("UserLoggedOutType")
 
   implicit val enumReads: Reads[MessageType] = EnumUtils.enumReads(MessageTypes)
 

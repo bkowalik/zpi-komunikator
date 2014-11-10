@@ -6,7 +6,7 @@ import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import akka.util.Timeout
 import org.joda.time.DateTime
 import play.api.libs.json.Json
-import protocol.{ESender, EDated, TextMessage, Envelope}
+import protocol._
 import protocol.MessageTypes._
 import services.DatabaseService
 import akka.pattern.{ask, pipe}
@@ -27,13 +27,19 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
       } getOrElse {
         log.debug(s"Register $name")
         database ! RecoverMessage(name)
+        self ! UserLoggedIn(name)
         clients.updated(name, Set(channel))
       }
     }
     case UnregisterClient(name, channel) => {
       clients = clients.get(name).map { channels =>
         log.debug(s"Unregister $name")
-        clients.updated(name, channels - channel)
+        if((channels - channel).isEmpty) {
+          self ! UserLoggedOut(name)
+          clients - name
+        } else {
+          clients.updated(name, channels - channel)
+        }
       } getOrElse {
         log.warning(s"Unregister not registered client $name")
         clients
@@ -71,8 +77,32 @@ class ClientsManager(database: ActorRef) extends Actor with ActorLogging {
         log.debug("Sending stored messages")
       }
     }
+    case com: UserLoggedIn => notifyUserLoggedIn(com)
+    case com: UserLoggedOut => notifyUserLoggedOut(com)
     case GiveAllOnline => sender() ! clients.keys
     case unknown => log.error(s"Unknown message ${unknown.toString}")
+  }
+
+  def notifyUserLoggedIn(com: UserLoggedIn) = {
+    clients.filterKeys(_ != com.username).map {
+      case (name, actors) => {
+        val envelope = new Envelope(Set(name), MessageTypes.UserLoggedInType, Json.toJson(com)) with EDated {
+          val date: DateTime = new DateTime()
+        }
+        actors foreach (_ ! envelope)
+      }
+    }
+  }
+
+  def notifyUserLoggedOut(com: UserLoggedOut) = {
+    clients.filterKeys(_ != com.username).map {
+      case (name, actors) => {
+        val envelope = new Envelope(Set(name), MessageTypes.UserLoggedOutType, Json.toJson(com)) with EDated {
+          val date: DateTime = new DateTime()
+        }
+        actors foreach (_ ! envelope)
+      }
+    }
   }
 }
 
