@@ -17,12 +17,19 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
       case false => LoginFailure
     }.pipeTo(sender())
 
-    case CreateUser(username, password, email) => ???
+    case CreateUser(username, password, email) => createAcc(username, password, email).map {
+      case true => UserCreationSuccess
+      case false => UserCreationFailure
+    }.pipeTo(sender())
   }
 
   def login(username: String, password: String): Future[Boolean] = Future {
     usersRepository.findByUsername(username)
   }.map(_.exists(usr => password.isBcrypted(usr.password)))
+
+  def createAcc(username: String, password: String, email: String): Future[Boolean] = Future {
+    usersRepository.createUser(username, password, email)
+  }
 }
 
 object UsersActor {

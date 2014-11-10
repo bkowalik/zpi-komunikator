@@ -13,6 +13,6 @@ class UsersService(usersActor: ActorRef) extends AsyncService {
   }
 
   def createUser(username: String, password: String, email: String) = {
-    usersActor.ask(CreateUser(username, password, email)).asInstanceOf[UserCreationStatus]
+    usersActor.ask(CreateUser(username, password, email)).asInstanceOf[Future[UserCreationStatus]]
   }
 }

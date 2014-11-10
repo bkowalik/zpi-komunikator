@@ -1,7 +1,7 @@
 package controllers
 
 import actors.ManagerProtocol.FriendsList
-import actors.repo.UsersProtocol.{LoginFailure, LoginSuccessful}
+import actors.repo.UsersProtocol.{UserCreationFailure, UserCreationSuccess, LoginFailure, LoginSuccessful}
 import com.wordnik.swagger.annotations._
 import play.api.data.Forms._
 import play.api.data._
@@ -37,15 +37,17 @@ class UsersController(managerService: ManagerService, usersService: UsersService
     new ApiImplicitParam(value = "Register form", required = true, dataType = "RegisterForm", paramType = "body")
   ))
   def register = Action.async { implicit request =>
-    Future { registerForm.bindFromRequest.fold(
+    registerForm.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(Json.toJson(FailureMessage(formWithErrors.errors)))
+        Future.successful(BadRequest(Json.toJson(FailureMessage(formWithErrors.errors))))
       },
       userData => {
-        //register user
-        Ok(Json.toJson(SuccessMessage("Account created")))
+        usersService.createUser(userData.username, userData.password, userData.email).map {
+          case UserCreationSuccess => Ok(Json.toJson(SuccessMessage("Account created")))
+          case UserCreationFailure => BadRequest(Json.obj("status" -> "ERROR", "message" -> "Username exists"))
+        }.recover{ case ex => InternalServerError(ex.toString) }
       }
-    )}
+    )
   }
 
   case class CheckFriends(friends: List[String])

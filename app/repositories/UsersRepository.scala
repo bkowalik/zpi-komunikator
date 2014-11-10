@@ -1,5 +1,7 @@
 package repositories
 
+import java.util.UUID
+
 import models.{User, Users}
 
 import scala.slick.driver.H2Driver.simple._
@@ -14,6 +16,6 @@ class UsersRepository(database: Database) {
   }
 
   def createUser(username: String, password: String, email: String) = database.withTransaction { implicit session=>
-    users.insert(User(None, username, password, email)).run
+    users.insert(User(Option(UUID.randomUUID()), username, password, email)).run == 1
   }
 }
