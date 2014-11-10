@@ -13,13 +13,12 @@ import scala.concurrent.Future
 @Api(value = "/", description = "Main operations on websocks")
 class CommunicationController(managerService: ManagerService) extends Controller with Secured {
   import play.api.Play.current
-  import managerService.manager
 
   @ApiOperation(nickname = "clientChannel", value = "Clients connection", notes = "Clients WebSocket")
   def clientChannel(name: String) = WebSocket.tryAcceptWithActor[JsValue, JsValue] { request =>
     Future {
       username(request).map { username =>
-        Right(ClientTalkActor.props(name, manager, _: ActorRef))
+        Right(ClientTalkActor.props(name, managerService, _: ActorRef))
       }.getOrElse(Left(Forbidden))
     }
   }

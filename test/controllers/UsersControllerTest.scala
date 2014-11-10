@@ -1,7 +1,16 @@
 package controllers
 
-import play.api.test.PlaySpecification
+import org.mockito.Mockito._
+import play.api.test.FakeRequest
+import util.BaseControllerTest
 
-class UsersControllerTest extends PlaySpecification {
+class UsersControllerTest extends BaseControllerTest {
 
+  it should "return forbidden when calling logout" in {
+    val request = FakeRequest(GET, "/users/logout")
+
+    val result = route(request).get
+
+    status(result) shouldBe UNAUTHORIZED
+  }
 }

@@ -4,6 +4,7 @@ import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorLogging, ActorRef, Props, Actor}
 import play.api.libs.json.{Json, JsValue}
 import protocol.{ESender, EDated, Envelope, TextMessage}
+import services.ManagerService
 
 class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
   assert(out != null)
@@ -31,5 +32,6 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
 }
 
 object ClientTalkActor {
-  def props(name: String, manager: ActorRef, out: ActorRef) = Props(classOf[ClientTalkActor], name, out, manager)
+  def props(name: String, manager: ManagerService, out: ActorRef) =
+    Props(classOf[ClientTalkActor], name, out, manager.getWorker)
 }

@@ -22,7 +22,7 @@ object ZPIServer extends Build {
 
   lazy val scalaTest = "org.scalatest" % "scalatest_2.11" % "2.2.2" % "test"
 
-  lazy val playTest = "org.scalatestplus" %% "play" % "1.1.0" % "test"
+  lazy val playTest = "org.scalatestplus" % "play_2.11" % "1.2.0" % "test"
 
   lazy val mockito = "org.mockito" % "mockito-all" % "1.9.0" % "test"
 

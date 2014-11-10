@@ -6,7 +6,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, BeforeAndAfterAll, FlatSpecLike}
 import play.api.libs.json.{JsObject, JsValue, Json}
 import protocol._
-import services.DatabaseService
+import services.{ManagerService, DatabaseService}
 import org.mockito.Mockito._
 import scala.concurrent.duration._
 
@@ -23,10 +23,12 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
 
   it should "all work together" in {
     val dbMock = mock[DatabaseService]
-    when(dbMock.database).thenReturn(dummyInstance)
+    when(dbMock.database) thenReturn(dummyInstance)
     val manager = system.actorOf(ClientsManager.props(dbMock))
-    val maniek = system.actorOf(ClientTalkActor.props("zenek", manager, dummyInstance))
-    val zenek = system.actorOf(ClientTalkActor.props("maniek", manager, self))
+    val managerServiceMock = mock[ManagerService]
+    when(managerServiceMock.getWorker) thenReturn(manager)
+    val maniek = system.actorOf(ClientTalkActor.props("zenek", managerServiceMock, dummyInstance))
+    val zenek = system.actorOf(ClientTalkActor.props("maniek", managerServiceMock, self))
     val msg = TextMessage("hiho!")
     val jsonMsg = Json.obj(
       "message" -> "hiho!"
@@ -46,5 +48,5 @@ class IntegrationActorTest(_system: ActorSystem) extends TestKit(_system) with I
     (received \ "from").as[String] shouldBe "zenek"
   }
 
-  override protected def afterAll(): Unit = system.shutdown()
+  override protected def afterAll(): Unit = system.awaitTermination()
 }

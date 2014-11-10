@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import akka.pattern.ask
 import scala.concurrent.duration._
 
-class ManagerService(val manager: ActorRef) extends AsyncService {
+class ManagerService(manager: ActorRef) extends AsyncService {
 
   def checkFriends(friends: Iterable[String]): Future[FriendsList] = {
     manager.ask(CheckFriendsAvailability(friends)).asInstanceOf[Future[FriendsList]]
@@ -17,4 +17,6 @@ class ManagerService(val manager: ActorRef) extends AsyncService {
   def checkAllOnline(): Future[Iterable[String]] = {
     manager.ask(GiveAllOnline).asInstanceOf[Future[Iterable[String]]]
   }
+
+  def getWorker: ActorRef = manager
 }
