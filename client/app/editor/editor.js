@@ -65,7 +65,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         $scope.init();
     })
 
-    .controller('editorController', function ($scope, $modal, UserService, $rootScope) {
+    .controller('editorController', function ($scope, $modal, UserService, ConversationService) {
         //$rootScope.conversations = [
             // {
             //     name : 'Conversation 1',
@@ -174,6 +174,13 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             // }
         //];
 
+        $scope.$watch(function () { return ConversationService.conversations }, function (newVal, oldVal) {
+            console.log(ConversationService.conversations);
+            if (typeof newVal !== 'undefined') {
+                $scope.conversations = ConversationService.conversations;
+            }
+        });
+
         $scope.init = function () {
             $scope.reloadHighlight();
         };
@@ -186,59 +193,15 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             });
         };
 
-        $scope.startConversation = function(users, convName){
-            console.log(users);
-            users = _.keys(users);
-            if($rootScope.conversations === undefined) $rootScope.conversations = [];
-            $rootScope.conversations.push({
-                name: convName,
-                id : _.uniqueId('conv_'),
-                code :  'public class Hello222{\n' +
-                '\tpublic static void main(String[] args) {\n' +
-                '\t\tSystem.out.print("Hello World");\n' +
-                '\t}\n' +
-                '}\n',
-                language : 'java',
-                contributors : users,
-                chat: []
-            });
-            $scope.reloadHighlight();
-
-            UserService.addMessageListener(users, function(resp){
-                $scope.receiveMessage(users,resp);
-            });
-        };
-
-        $rootScope.startConversation  = $scope.startConversation; //antywzorce ^^
-
         $scope.sendMessage = function(conversation){
-            UserService.sendMessage($scope.message, conversation.contributors);
-            conversation.chat.push({
-                name : UserService.currentUser(),
-                avatarInitials : "AM",
-                avatarColor : "AAA",
-                text : $scope.message,
-                time : (new Date()).toLocaleTimeString()
-            });
+            ConversationService.sendMessage($scope.message, conversation);
             $scope.message = "";
-        };
-
-        $scope.receiveMessage = function(users, resp){
-            var conversation = _.find($rootScope.conversations, function(conv){ return conv.contributors == users});
-            console.log(resp);
-            console.log(users);
-            conversation.chat.push({
-                name : resp.from,
-                avatarInitials : "AM",
-                avatarColor : "AAA",
-                text : resp.payload.message,
-                time : resp.date
-            });
         };
 
         $scope.init();
 
         $scope.openModal = function () {
+            console.log(ConversationService.conversations);
             var modalInstance = $modal.open({
               templateUrl: 'editor/modals/convModal.html',
               controller: 'ModalInstanceCtrl',
@@ -247,7 +210,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             });
 
             modalInstance.result.then(function (obj) {
-                $scope.startConversation(obj.selected, obj.name);
+                ConversationService.startConversation(obj.selected, obj.name);
             });
         };
     })
