@@ -26,9 +26,10 @@ class FileActor(val text: String, val shadows: Map[ActorRef, String] = Map.empty
 
       if (md5(newText) == checksum) {
         // TODO: should we send this to client that sent the diff?
-        shadows foreach { case (client1, shadow) =>
+        shadows map { case (client1, shadow) =>
           val diff = dmp.patch_make(shadow, newText)
           client1 ! Diff(dmp.patch_toText(diff))
+          (client, newText)
         }
         context.become(receiveWith(newText, shadows))
       }
