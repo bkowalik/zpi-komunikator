@@ -17,7 +17,7 @@
             </div>
 
             <ul class="list-group" id="contact-list">
-                <li class="list-group-item" ng-repeat="contact in usersOnline | orderBy: 'name.first' | filter: filterKey">
+                <li class="list-group-item" ng-repeat="contact in usersOnline | orderBy: 'name.first' | filter: '!'+currentUser | filter: filterKey">
                     <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
                         <img ng-src="{{contact.picture.large}}"  alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" ng-if="contact.picture.large != null" />
                         <img ng-src="http://placehold.it/400/{{contact.avatarColor}}/fff&text={{contact.avatarInitials}}" alt="User Avatar" class="img-responsive img-circle" ng-if="contact.picture.large == null"/>
@@ -43,7 +43,7 @@
                     </div>
                     <div class="clearfix"></div>
                 </li>
-                <li class="list-group-item offline" ng-repeat="contact in usersOffline | orderBy: 'name.first' | filter: filterKey">
+                <li class="list-group-item offline" ng-repeat="contact in usersOffline | orderBy: 'name.first' | filter: '!'+currentUser | filter: filterKey">
                     <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
                         <img ng-src="{{contact.picture.large}}"  alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" ng-if="contact.picture.large != null" />
                         <img ng-src="http://placehold.it/400/{{contact.avatarColor}}/fff&text={{contact.avatarInitials}}" alt="User Avatar" class="img-responsive img-circle" ng-if="contact.picture.large == null"/>

@@ -32,9 +32,10 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                    };
                })
 
-    .controller('contactsController', function ($scope, $rootScope, $http, UserGraphic) {
+    .controller('contactsController', function ($scope, $rootScope, $http, UserGraphic, UserService) {
                     $scope.usersOnline = [];
                     $scope.usersOffline = [];
+                    $scope.currentUser = UserService.currentUser();
 
                     $http.get('http://54.77.232.158:9000/users/available').success(function (data) {
                         var usersOnline = data.online;
