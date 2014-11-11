@@ -33,8 +33,11 @@ angular.module('developerCommunicator.login', ['ngRoute'])
                      UserService.serverStarted(function(){
                          window.location.hash = "/editor";
                      });
+                    $scope.errorOccured=false;
                   }).error(function(data, status, headers, config){
                     console.log("Error when login");
+                    $scope.errorOccured=true;
+                    $scope.errorMessage = data.general[0];
                   });
             // $.ajax({
             //   type: "POST",

@@ -23,14 +23,14 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 "location": "B45",
                 "phone": "(304)-407-6713",
                 "picture": {
-                    "large": "http://api.randomuser.me/portraits/men/0.jpg",
+                    "large": "http://api.randomuser.me/portraits/men/0.jpg"
                 }
             },
             {
                 "name": {"title": "mr", "first": "liam", "last": "robinson"},
                 "phone": "(803)-333-2499",
                 "picture": {
-                    "large": "http://api.randomuser.me/portraits/men/33.jpg",
+                    "large": "http://api.randomuser.me/portraits/men/33.jpg"
                 }
             }];
         $rootScope.contactsOffline = [
@@ -39,7 +39,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 "login": "organicpanda958",
                 "phone": "(540)-841-4132",
                 "picture": {
-                    "large": "http://api.randomuser.me/portraits/women/76.jpg",
+                    "large": "http://api.randomuser.me/portraits/women/76.jpg"
                 }
             },
             {
@@ -48,7 +48,7 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
                 "email": "harper.medina98@example.com",
                 "login": "bigpanda573",
                 "picture": {
-                    "large": "http://api.randomuser.me/portraits/women/30.jpg",
+                    "large": "http://api.randomuser.me/portraits/women/30.jpg"
                 }
             }];
 
