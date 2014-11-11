@@ -28,13 +28,13 @@
         <a class="navbar-brand" href="#">DevCom</a>
     </div>
     <div class="navbar-collapse collapse navbar-responsive-collapse">
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav" ng-if="angular.isDefined(user) || user != null">
             <li><a href="#/editor"><span class="glyphicon glyphicon-edit"></span> Editor</a></li>
             <li><a href="#/contacts"><span class="glyphicon glyphicon-user"></span> Contacts</a></li>
             <li><a href="#/history"><span class="glyphicon glyphicon-comment"></span> Conversation history</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#/settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
+            <li ng-if="angular.isDefined(user) || user != null"><a href="#/settings"><span class="glyphicon glyphicon-cog"></span> Settings</a></li>
             <li><a href="#/login" ng-click="show()"><span class="glyphicon glyphicon-log-out"></span> {{ angular.isUndefined(user) || user === null  ? 'Sign in ' :'Logout (' + user + ')' }}</a></li>
         </ul>
 
