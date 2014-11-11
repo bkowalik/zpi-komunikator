@@ -150,7 +150,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.start = function () {
                         var obj = {
                             selected: $scope.checked,
-                            name: $scope.name
+                            name: $scope.name != null? $scope.name : $scope.currentUser
                         };
                         $modalInstance.close(obj);
                     };
