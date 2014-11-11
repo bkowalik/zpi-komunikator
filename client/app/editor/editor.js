@@ -82,6 +82,8 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                 })
 
     .controller('editorController', function ($scope, $modal, UserService, ConversationService) {
+                    $scope.sendOnEnterEnabled = true;
+
                     $scope.$watch(function () {
                         return ConversationService.getConversations()
                     }, function (newVal, oldVal) {
@@ -106,6 +108,13 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.sendMessage = function (conversation) {
                         ConversationService.sendMessage($scope.message, conversation);
                         $scope.message = "";
+                    };
+
+                    $scope.sendMessageOnEnter = function (conversation) {
+                        if($scope.sendOnEnterEnabled) {
+                            ConversationService.sendMessage($scope.message, conversation);
+                            $scope.message = "";
+                        }
                     };
 
                     $scope.openModal = function () {
