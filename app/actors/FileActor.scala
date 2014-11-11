@@ -4,7 +4,7 @@ import java.security.MessageDigest
 import java.util
 
 import actors.FileProtocol._
-import akka.actor.{ActorRef, ActorLogging, Actor}
+import akka.actor.{Props, ActorRef, ActorLogging, Actor}
 import com.sksamuel.diffpatch.DiffMatchPatch
 import com.sksamuel.diffpatch.DiffMatchPatch.Patch
 
@@ -47,6 +47,11 @@ class FileActor(val text: String, val shadows: Map[ActorRef, String] = Map.empty
     case unknown => log.warning(s"Unknown message ${unknown.toString}")
   }
 
+}
+
+object FileActor {
+  def props(text: String, shadows: Map[ActorRef, String]) =
+    Props(classOf[FileActor], text, shadows)
 }
 
 sealed trait FileProtocol
