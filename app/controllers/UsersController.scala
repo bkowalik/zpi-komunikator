@@ -1,7 +1,7 @@
 package controllers
 
 import actors.ManagerProtocol.FriendsList
-import actors.repo.UsersProtocol.{UserCreationFailure, UserCreationSuccess, LoginFailure, LoginSuccessful}
+import actors.repo.UsersProtocol._
 import com.wordnik.swagger.annotations._
 import play.api.data.Forms._
 import play.api.data._
@@ -110,5 +110,26 @@ class UsersController(managerService: ManagerService, usersService: UsersService
     usersService.allUsers.map {
       case list: Iterable[String] => Ok(Json.obj("users" -> list))
     }.recover { case ex => InternalServerError(ex.toString) }
+  }
+
+  case class ChangePassword(oldPassword: String, newPassword: String)
+
+  val changePasswordForm = Form(
+    mapping(
+      "old" -> nonEmptyText(6),
+      "new" -> nonEmptyText(6)
+    )(ChangePassword.apply)(ChangePassword.unapply)
+  )
+
+  def changePassword = withAsyncAuth { username => implicit request =>
+    changePasswordForm.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(Json.toJson(FailureMessage(formWithErrors.errors)))),
+      data => {
+        usersService.changePassword(username, data.oldPassword, data.newPassword).map {
+          case PasswordChanged => NoContent
+          case PasswordNotChanged => BadRequest(Json.obj("message" -> "Wrong password", "status" -> "ERROR"))
+        } recover { case ex => InternalServerError(ex.toString) }
+      }
+    )
   }
 }

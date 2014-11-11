@@ -22,4 +22,8 @@ class UsersRepository(database: Database) {
   def allUsers = database.withTransaction { implicit session =>
     users.map(_.username).list
   }
+
+  def setPassword(username: String, password: String) = database.withTransaction { implicit session =>
+    users.filter(_.username === username).map(_.password).update(password)
+  }
 }

@@ -49,4 +49,22 @@ class UsersControllerTest extends BaseControllerTest {
     val json = contentAsJson(result)
     (json \ "users") shouldBe a[JsArray]
   }
+
+  it should "change users password" in {
+    import com.github.t3hnar.bcrypt._
+    val json = Json.obj(
+      "new" -> "foo123",
+      "old" -> "zenek123"
+    )
+    val request = FakeRequest(PUT, "/users/password").withSession("username" -> "zenek").withJsonBody(json)
+
+    val result = route(request).get
+
+    status(result) shouldBe NO_CONTENT
+    Application.database.withTransaction { implicit session =>
+      Application.usersRepository.findByUsername("zenek").fold(fail("User does not exist")) { user =>
+        "foo123".isBcrypted(user.password) shouldBe true
+      }
+    }
+  }
 }

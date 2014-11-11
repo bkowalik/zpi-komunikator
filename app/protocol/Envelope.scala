@@ -35,6 +35,36 @@ object UserLoggedOut {
   implicit val writes = Json.writes[UserLoggedOut]
 }
 
+sealed trait DiffSync
+object DiffSync {
+  implicit val reads = new Reads[DiffSync] {
+    def reads(json: JsValue): JsResult[DiffSync] = {
+      val text = (json \ "text").as[String]
+      val obj = (json \ "kind").as[String] match {
+        case "NewSession" => NewSession(text)
+        case "Patch" => Patch(text)
+      }
+
+      JsSuccess(obj)
+    }
+  }
+
+  implicit val writes = new Writes[DiffSync] {
+    def writes(o: DiffSync): JsValue = o match {
+      case msg @ NewSession(text) => Json.obj(
+        "kind" -> "NewSession",
+        "text" -> text
+      )
+      case msg @ Patch(text) => Json.obj(
+        "kind" -> "Patch",
+        "text" -> text
+      )
+    }
+  }
+}
+case class NewSession(text: String) extends DiffSync
+case class Patch(text: String) extends DiffSync
+
 object Envelope {
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
@@ -65,6 +95,10 @@ object Envelope {
       )
     }
   }
+
+  def keepAliveMessage(client: String) = new Envelope(Set(client), None, MessageTypes.KeepAlive, JsNull) with EDated {
+    val date: DateTime = new DateTime()
+  }
 }
 
 object MessageTypes extends Enumeration {
@@ -75,6 +109,10 @@ object MessageTypes extends Enumeration {
   val UserLoggedInType = Value("UserLoggedInType")
 
   val UserLoggedOutType = Value("UserLoggedOutType")
+
+  val DiffSyncType = Value("DiffSyncType")
+
+  val KeepAlive = Value("KeepAlive")
 
   implicit val enumReads: Reads[MessageType] = EnumUtils.enumReads(MessageTypes)
 

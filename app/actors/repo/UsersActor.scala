@@ -23,6 +23,8 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
 
     case AllUsers => allUsers.pipeTo(sender())
 
+    case ChangePassword(username, oldPassword, newPassword) => changePassword(username, oldPassword, newPassword).pipeTo(sender())
+
     case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }
 
@@ -36,6 +38,19 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
 
   def allUsers: Future[Iterable[String]] = Future {
     usersRepository.allUsers
+  }
+
+  def changePassword(username: String, oldPassword: String, newPassword: String): Future[ChangePasswordStatus] = Future {
+    usersRepository.findByUsername(username).map { user =>
+      if(oldPassword.isBcrypted(user.password)) {
+        if(usersRepository.setPassword(username, newPassword.bcrypt(salt)) == 1)
+          PasswordChanged
+        else
+          PasswordNotChanged
+      } else {
+        PasswordNotChanged
+      }
+    }.getOrElse(PasswordNotChanged)
   }
 }
 
@@ -52,9 +67,14 @@ object UsersProtocol {
 
   case object AllUsers extends UsersProtocol
 
-  sealed trait UserCreationStatus
+  sealed trait UserCreationStatus extends UsersProtocol
   case object UserCreationSuccess extends UserCreationStatus
   case object UserCreationFailure extends UserCreationStatus
+
+  case class ChangePassword(username: String, oldPassword: String, newPassword: String) extends UsersProtocol
+  sealed trait ChangePasswordStatus extends UsersProtocol
+  case object PasswordChanged extends ChangePasswordStatus
+  case object PasswordNotChanged extends ChangePasswordStatus
 
   sealed trait LoginStatus extends UsersProtocol
   case object LoginSuccessful extends LoginStatus

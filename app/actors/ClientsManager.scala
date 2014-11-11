@@ -1,5 +1,7 @@
 package actors
 
+import java.util.UUID
+
 import actors.DatabaseProtocol.{StoredMessages, RecoverMessage, StoreMessage}
 import actors.ManagerProtocol.{GiveAllOnline, CheckFriendsAvailability, UnregisterClient, RegisterClient}
 import akka.actor.{Props, ActorLogging, ActorRef, Actor}
@@ -12,10 +14,15 @@ import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 
 class ClientsManager() extends Actor with ActorLogging {
+  import context.dispatcher
 
   implicit val timeout: Timeout = 5 seconds
 
   var clients = Map.empty[String, Set[ActorRef]]
+
+  var diffSyncs = Map.empty[UUID, ActorRef]
+
+  context.system.scheduler.schedule(Duration.Zero, 20 seconds, self, KeepAlive)
 
   def receive = {
     case RegisterClient(name, channel) => {
@@ -63,6 +70,15 @@ class ClientsManager() extends Actor with ActorLogging {
             //database ! StoreMessage(newMsg)
           }
         }
+        case DiffSyncType => {
+          newMsg.to.headOption.fold {
+            val uuid = UUID.randomUUID()
+            newMsg.from
+            context.actorOf(FileActor.props(???, ???))
+          } {
+            ???
+          }
+        }
       }
     }
     case CheckFriendsAvailability(friends) => {
@@ -78,6 +94,12 @@ class ClientsManager() extends Actor with ActorLogging {
     case com: UserLoggedIn => notifyUserLoggedIn(com)
     case com: UserLoggedOut => notifyUserLoggedOut(com)
     case GiveAllOnline => sender() ! clients.keys
+    case KeepAlive => clients.map {
+      case (client, connections) => {
+        val msg = Envelope.keepAliveMessage(client)
+        connections.foreach(_ ! msg)
+      }
+    }
     case unknown => log.warning(s"Unknown message ${unknown.toString}")
   }
 
@@ -115,6 +137,7 @@ object ManagerProtocol {
   case class UnregisterClient(name: String, channel: ActorRef) extends ManagerProtocol
   case class CheckFriendsAvailability(friends: Iterable[String]) extends ManagerProtocol
   case object GiveAllOnline extends ManagerProtocol
+  case object KeepAlive extends ManagerProtocol
 
   case class FriendsList(friends: Map[String, Boolean]) extends ManagerProtocol
 }

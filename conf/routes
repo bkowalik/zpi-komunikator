@@ -11,6 +11,7 @@ GET     /users/available            @controllers.UsersController.checkAllOnline
 POST    /users/login                @controllers.UsersController.doLogin
 GET     /users/logout               @controllers.UsersController.logout
 GET     /users/all                  @controllers.UsersController.allUsers
+PUT     /users/password             @controllers.UsersController.changePassword
 
 # Swagger
 GET     /api-docs                   controllers.ApiHelpController.getResources

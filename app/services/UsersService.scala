@@ -1,6 +1,5 @@
 package services
 
-import actors.repo.UsersProtocol
 import actors.repo.UsersProtocol._
 import akka.actor.ActorRef
 import akka.pattern.ask
@@ -18,5 +17,9 @@ class UsersService(usersActor: ActorRef) extends AsyncService {
 
   def allUsers: Future[Iterable[String]] = {
     usersActor.ask(AllUsers).asInstanceOf[Future[Iterable[String]]]
+  }
+
+  def changePassword(username: String, oldPassword: String, newPassword: String): Future[ChangePasswordStatus] = {
+    usersActor.ask(ChangePassword(username, oldPassword, newPassword)).asInstanceOf[Future[ChangePasswordStatus]]
   }
 }
