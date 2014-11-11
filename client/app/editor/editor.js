@@ -96,6 +96,10 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     //     $scope.conversations = data;
                     // });
 
+                    $scope.clearNotification = function(conv){
+                        conv.new_message = false;
+                    }
+
                     ConversationService.registerObserverCallback($scope.updateConversation);
 
                     $scope.sendMessage = function (conversation) {

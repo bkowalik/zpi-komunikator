@@ -109,3 +109,39 @@ pre {
 .online {
     color: #109d24;
 }
+
+.blink a{
+    background: red;
+    animation: myfirst 2s;
+    -moz-animation: myfirst 2s; /* Firefox */
+    -webkit-animation: myfirst 2s; /* Safari and Chrome */
+    -o-animation: myfirst 2s; /* Opera */
+        
+    -moz-animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+}
+
+@keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-moz-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-webkit-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-o-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}

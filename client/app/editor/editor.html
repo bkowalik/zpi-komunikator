@@ -2,8 +2,8 @@
     <div class="navbar navbar-inverse">
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
-                <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}">
-                    <a href ng-click="$parent.actual_tab=$index" class="menu-clearfix">
+                <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}{{conversation.new_message ? ' blink':''}}">
+                    <a href ng-click="$parent.actual_tab=$index || clearNotification(conversation)" class="menu-clearfix">
                         {{conversation.name}}
                     </a>
                     <a href ng-click="closeConversation()" class="menu-clearfix">
@@ -32,7 +32,7 @@
 
     <div id="myTabContent" class="tab-content">
         <div ng-repeat="conversation in conversations">
-            <div id="{{conversation.id}}" ng-show="$index == actual_tab">
+            <div id="{{conversation.id}}" ng-show="$index == actual_tab" ng-click="clearNotification(conversation)">
                 <div class="col-lg-8">
                     <pre><code class="{{conversation.language}}" contenteditable="true" data-ng-model="conversation.code">{{conversation.code}}</code></pre>
                 </div>

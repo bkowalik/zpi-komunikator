@@ -149,6 +149,8 @@ angular.module('developerCommunicator', [
                      });
                      var userName = message.from;
 
+                     conversation.new_message = true;
+
                      conversation.chat.push(
                          {
                              name: userName,
@@ -248,6 +250,8 @@ angular.module('developerCommunicator', [
                              return conv.id == message.id
                          });
                          var userName = message.from;
+
+                         conversation.new_message = true;
 
                          conversation.chat.push(
                              {
