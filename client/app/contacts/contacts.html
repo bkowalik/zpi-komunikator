@@ -17,15 +17,16 @@
             </div>
 
             <ul class="list-group" id="contact-list">
-                <li class="list-group-item" ng-repeat="contact in contactsOnline | orderBy: 'name.first' | filter: filterKey">
+                <li class="list-group-item" ng-repeat="contact in usersOnline | orderBy: 'name.first' | filter: filterKey">
                     <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
-                        <img ng-src="{{contact.picture.large}}" alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" />
+                        <img ng-src="{{contact.picture.large}}"  alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" ng-if="contact.picture.large != null" />
+                        <img ng-src="http://placehold.it/400/{{contact.avatarColor}}/fff&text={{contact.avatarInitials}}" alt="User Avatar" class="img-responsive img-circle" ng-if="contact.picture.large == null"/>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         <span class="name" style="text-transform: capitalize">
                             {{contact.name.first != null && contact.name.last
                             ? contact.name.first + ' ' + contact.name.last
-                            : contact.login }}
+                            : contact.name }}
                         </span><span class="name online">(online)<br/></span>
                         <div class="col-sm-4 col-md-4 col-lg-4" ng-if="contact.location != null">
                             <span class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip" title="{{contact.location}}"></span>
@@ -42,15 +43,16 @@
                     </div>
                     <div class="clearfix"></div>
                 </li>
-                <li class="list-group-item offline" ng-repeat="contact in contactsOffline | orderBy: 'name.first' | filter: filterKey">
+                <li class="list-group-item offline" ng-repeat="contact in usersOffline | orderBy: 'name.first' | filter: filterKey">
                     <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
-                        <img ng-src="{{contact.picture.large}}" alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" />
+                        <img ng-src="{{contact.picture.large}}"  alt="{{contact.name.first}} {{contact.name.last}}" class="img-responsive img-circle" ng-if="contact.picture.large != null" />
+                        <img ng-src="http://placehold.it/400/{{contact.avatarColor}}/fff&text={{contact.avatarInitials}}" alt="User Avatar" class="img-responsive img-circle" ng-if="contact.picture.large == null"/>
                     </div>
                     <div class="col-xs-12 col-sm-10">
                         <span class="name" style="text-transform: capitalize">
                             {{contact.name.first != null && contact.name.last
                             ? contact.name.first + ' ' + contact.name.last
-                            : contact.login }} <br/>
+                            : contact.name }} <br/>
                         </span>
                         <div class="col-sm-4 col-md-4 col-lg-4" ng-if="contact.location != null">
                             <span class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip" title="{{contact.location}}"></span>
@@ -68,6 +70,5 @@
                     <div class="clearfix"></div>
                 </li>
             </ul>
-        </div>
     </div>
 </div>

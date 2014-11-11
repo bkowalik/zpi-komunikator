@@ -32,41 +32,33 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                    };
                })
 
-    .controller('contactsController', function ($scope, $rootScope) {
-                    $rootScope.contactsOnline = [
-                        {
-                            "name": {"title": "mr", "first": "nathaniel", "last": "baker"},
-                            "location": "B45",
-                            "phone": "(304)-407-6713",
-                            "picture": {
-                                "large": "http://api.randomuser.me/portraits/men/0.jpg"
-                            }
-                        },
-                        {
-                            "name": {"title": "mr", "first": "liam", "last": "robinson"},
-                            "phone": "(803)-333-2499",
-                            "picture": {
-                                "large": "http://api.randomuser.me/portraits/men/33.jpg"
-                            }
-                        }];
-                    $rootScope.contactsOffline = [
-                        {
-                            "location": "D12",
-                            "login": "organicpanda958",
-                            "phone": "(540)-841-4132",
-                            "picture": {
-                                "large": "http://api.randomuser.me/portraits/women/76.jpg"
-                            }
-                        },
-                        {
-                            "name": {"title": "mrs", "first": "harper"},
-                            "location": "D34",
-                            "email": "harper.medina98@example.com",
-                            "login": "bigpanda573",
-                            "picture": {
-                                "large": "http://api.randomuser.me/portraits/women/30.jpg"
-                            }
-                        }];
+    .controller('contactsController', function ($scope, $rootScope, $http, UserGraphic) {
+                    $scope.usersOnline = [];
+                    $scope.usersOffline = [];
+
+                    $http.get('http://54.77.232.158:9000/users/available').success(function (data) {
+                        var usersOnline = data.online;
+
+                        resolveAvatarForEachUserAndPushToScope(data.online, $scope.usersOnline);
+
+                        $http.get('http://54.77.232.158:9000/users/all').success(function (data) {
+                            var usersOffline = $(data.users).not(usersOnline).get();
+
+                            resolveAvatarForEachUserAndPushToScope(usersOffline, $scope.usersOffline)
+                        });
+                    });
+
+                    var resolveAvatarForEachUserAndPushToScope = function(users, scope) {
+                        users.forEach(function(user) {
+                            scope.push(
+                                {
+                                    name: user,
+                                    avatarInitials: UserGraphic.initialsByLogin(user),
+                                    avatarColor: UserGraphic.color(user)
+                                }
+                            )
+                        });
+                    };
 
                     $scope.init = function () {
                         $scope.applyTooltip();

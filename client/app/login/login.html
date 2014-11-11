@@ -15,13 +15,13 @@
             <div style="padding: 20px;" id="form-toggle">
                 <form accept-charset="UTF-8" role="form" id="login-form" method="post">
                     <fieldset>
-                        <div class="form-group input-group">
+                        <div class="form-group input-group" ng-class="errorOccured ? 'has-error' : ''">
                             <span class="input-group-addon">
                             <span class="glyphicon glyphicon-user"></span>
                             </span>
                             <input class="form-control" placeholder="Login" name="login" type="text" autofocus="" ng-model="login" required>
                         </div>
-                        <div class="form-group input-group">
+                        <div class="form-group input-group" ng-class="errorOccured ? 'has-error' : ''">
                             <span class="input-group-addon">
                             <span class="glyphicon glyphicon-lock"></span>
                             </span>
