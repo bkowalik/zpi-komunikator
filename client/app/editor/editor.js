@@ -127,7 +127,6 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
             $scope.users = data.online;
           });
 
-        $scope.users = ["testowy1","testowy2","testowy3"];
         $scope.start = function () {
             var obj = {
                 selected: $scope.checked,

@@ -8,12 +8,34 @@ angular.module('developerCommunicator', [
     'developerCommunicator.settings',
     'developerCommunicator.history',
     'developerCommunicator.login'
-]).
-    config(['$routeProvider', function ($routeProvider) {
+])
+    .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .otherwise({redirectTo: '/login'});
-    }]).
-    factory( 'UserService', function($rootScope) {
+    }])
+    .factory( 'UserGraphic', function($rootScope) {
+
+        return {
+            color: function(text) {
+                // str to hash
+                for (var i = 0, hash = 0; i < text.length; hash = text.charCodeAt(i++) + ((hash << 5) - hash));
+
+                // int/hash to hex
+                for (var i = 0, color = ""; i < 3; color += ("00" + ((hash >> i++ * 8) & 0xFF).toString(16)).slice(-2));
+
+                return color;
+            },
+
+            initialsByLogin: function(login) {
+                return (login.charAt(0) + login.charAt(1)).toUpperCase()
+            },
+
+            initialsByFirstLastNames: function(firstName, lastName) {
+                return (firstName.charAt(0) + lastName.charAt(1)).toUpperCase()
+            }
+        }
+    })
+    .factory( 'UserService', function($rootScope) {
       var currentUser = null;
       var ws = null;
       var ws_flags = [];
@@ -97,15 +119,17 @@ angular.module('developerCommunicator', [
         }
       };
     })
-    .factory( 'ConversationService', function(UserService) {
+    .factory( 'ConversationService', function(UserService, UserGraphic) {
       var conversations = [];
       var observerCallbacks = [];
       var receiveMessage = function(message){
             var conversation = _.find(conversations, function(conv){ return conv.id == message.id});
+            var userName = message.from;
+
             conversation.chat.push({
-                name : message.from,
-                avatarInitials : "AM",
-                avatarColor : "AAA",
+                name : userName,
+                avatarInitials : UserGraphic.initialsByLogin(userName),
+                avatarColor : UserGraphic.color(userName),
                 text : message.payload.message,
                 time : message.date
             });
@@ -174,10 +198,12 @@ angular.module('developerCommunicator', [
             UserService.addMessageListener(conversation.id, this.receiveMessage);
         },
         sendMessage : function(message, conversation){
+            var currentUser = UserService.currentUser();
+
             conversation.chat.push({
-                name : UserService.currentUser(),
-                avatarInitials : "AM",
-                avatarColor : "AAA",
+                name : currentUser,
+                avatarInitials : UserGraphic.initialsByLogin(currentUser),
+                avatarColor : UserGraphic.color(currentUser),
                 text : message,
                 time : (new Date()).toLocaleTimeString()
             });
@@ -185,10 +211,12 @@ angular.module('developerCommunicator', [
         },
         receiveMessage : function(message){
             var conversation = _.find(conversations, function(conv){ return conv.id == message.id});
+            var userName = message.from;
+
             conversation.chat.push({
-                name : message.from,
-                avatarInitials : "AM",
-                avatarColor : "AAA",
+                name : userName,
+                avatarInitials : UserGraphic.initialsByLogin(userName),
+                avatarColor : UserGraphic.color(userName),
                 text : message.payload.message,
                 time : message.date
             });
