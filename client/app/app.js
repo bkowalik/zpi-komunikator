@@ -67,8 +67,13 @@ angular.module('developerCommunicator', [
                 setTimeout(sendMessage(message), 200);
             }
           },
-        logout: function() { 
-            return currentUser==null;
+        logout: function() {
+            currentUser = null;
+            ws = null;
+            ws_flags = [];
+            message_callbacks = [];
+
+            return currentUser;
          },
         addMessageListener: function(id, callback){
           message_callbacks[id] = callback;
@@ -203,16 +208,22 @@ angular.module('developerCommunicator', [
 
     .controller('headerController', function ($scope, UserService) {
         $scope.user = UserService.currentUser();
+
         $scope.$watch(function () { return UserService.currentUser() }, function (newVal, oldVal) {
             if (typeof newVal !== 'undefined') {
                 $scope.user = UserService.currentUser();
             }
         });
+
         $scope.$on('$routeChangeStart', function (event) {
           if (!UserService.isLoggedIn()) {
               window.location.hash="/login"
           }
         });
+
+        $scope.userLogout = function() {
+            $scope.user = UserService.logout();
+        }
     });
         
 var guid = (function() {

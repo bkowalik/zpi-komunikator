@@ -26,7 +26,7 @@ angular.module('developerCommunicator.login', ['ngRoute'])
 
         $scope.clickLogin = function(){
             $http.defaults.withCredentials = true;
-            $http.post('http://54.77.232.158:9000/users/login',{username: $scope.login,password:$scope.password},{withCredentials: true})
+            $http.post('http://54.77.232.158:9000/users/login',{username: $scope.login, password: $scope.password}, {withCredentials: true} )
                  .success(function(data, status, headers, config) {
                     console.log(headers);
                      UserService.login($scope.login,$scope.password);

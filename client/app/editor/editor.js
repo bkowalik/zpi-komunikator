@@ -120,23 +120,23 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
     })
 
     .controller('ModalInstanceCtrl', function ($scope, $modalInstance, $http) {
-    $scope.checked = [];
-    $scope.name = null;
+        $scope.checked = [];
+        $scope.name = null;
 
-    $http.get('http://54.77.232.158:9000/users/available').success(function(data) {
-        $scope.users = data.online;
-      });
+        $http.get('http://54.77.232.158:9000/users/available').success(function(data) {
+            $scope.users = data.online;
+          });
 
-    $scope.users = ["testowy1","testowy2","testowy3"];
-    $scope.start = function () {
-        var obj = {
-            selected: $scope.checked,
-            name: $scope.name
-        }
-        $modalInstance.close(obj);
-    };
+        $scope.users = ["testowy1","testowy2","testowy3"];
+        $scope.start = function () {
+            var obj = {
+                selected: $scope.checked,
+                name: $scope.name
+            };
+            $modalInstance.close(obj);
+        };
 
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
+        $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+        };
 });
