@@ -119,7 +119,8 @@ angular.module('developerCommunicator.editor', ['ngRoute','ui.bootstrap'])
         };
     })
 
-    .controller('ModalInstanceCtrl', function ($scope, $modalInstance, $http) {
+    .controller('ModalInstanceCtrl', function ($scope, $modalInstance, $http, UserService) {
+        $scope.currentUser = UserService.currentUser();
         $scope.checked = [];
         $scope.name = null;
 

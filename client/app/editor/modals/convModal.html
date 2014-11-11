@@ -7,7 +7,7 @@
     </div>
     <p>Select user(s) to start conversation:</p> 
     <ul class="list-group">
-        <li ng-repeat="user in users" class="list-group-item btn-group col-sm-12">
+        <li ng-repeat="user in users | filter:'!'+currentUser" class="list-group-item btn-group col-sm-12">
                 <label class="btn btn-default disabled col-sm-9" >{{user}}</label>
                 <label class="btn btn-success col-sm-3" ng-class="checked[user]? 'btn-danger': 'btn-success'" ng-model="checked[user]" btn-checkbox>{{checked[user]?'Remove':'Add'}}</label>
         </li>
