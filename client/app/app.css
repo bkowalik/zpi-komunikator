@@ -13,6 +13,10 @@ pre {
     padding: 0;
 }
 
+.menu-clearfix {
+    display: inline;
+    float: left;
+}
 
 /* fill */
 
