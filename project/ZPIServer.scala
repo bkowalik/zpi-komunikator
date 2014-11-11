@@ -26,7 +26,10 @@ object ZPIServer extends Build {
 
   lazy val mockito = "org.mockito" % "mockito-all" % "1.9.0" % "test"
 
-  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, macWireRuntime, macWire, scalaBcrypt, swagger, scalaTest, mockito) ++ akka
+  lazy val diffMatchPatch = "com.sksamuel.diff" % "diff" % "1.1.11"
+
+  lazy val deps = Seq(jdbc, anorm, slick, jodaTime, macWireRuntime, macWire, scalaBcrypt, swagger, scalaTest,
+                       mockito, diffMatchPatch) ++ akka
 
   lazy val main = Project("zpi-server", file(".")).enablePlugins(play.PlayScala)
     .settings(
