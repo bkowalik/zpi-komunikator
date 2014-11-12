@@ -57,8 +57,6 @@ angular.module('developerCommunicator', [
                              var server_message = JSON.parse(event.data);
 
                              console.log("Received message");
-                             console.log(server_message);
-                             console.log(server_message["kind"]);
 
                              switch (server_message["kind"]) {
                                  case "TextMessageType":
@@ -132,7 +130,6 @@ angular.module('developerCommunicator', [
 
                      setNewConversationHandler: function (value) {
                          console.log("Registered handler");
-                         console.log(value);
 
                          newConversationHandler = value;
                      }
@@ -142,6 +139,9 @@ angular.module('developerCommunicator', [
     .factory('ConversationService', function (UserService, UserGraphic) {
                  var conversations = [];
                  var observerCallbacks = [];
+
+                 var changeCount = [];
+                 var sendTimeOut = [];
 
                  var receiveMessage = function (message) {
                      var conversation = _.find(conversations, function (conv) {
@@ -195,6 +195,10 @@ angular.module('developerCommunicator', [
                      angular.forEach(observerCallbacks, function (callback) {
                          callback(conversations);
                      });
+                 };
+
+                 var sendCodeToServer = function(conv){
+                    console.log("send!!");
                  };
 
                  UserService.setNewConversationHandler(setConversation);
@@ -272,6 +276,26 @@ angular.module('developerCommunicator', [
 
                      getConversations: function () {
                          return conversations;
+                     },
+                     changeCode: function(code, conv) {
+                        var conversation = _.find(conversations, function (conv_it) {
+                            return conv_it.id == conv.id
+                        });   
+                        if(changeCount[conversation.id] === undefined) changeCount[conversation.id] = 0;
+
+                        if(changeCount[conversation.id] == 5){
+                            sendTimeOut[conversation.id] = null;
+                            changeCount[conversation.id] = 0;
+                            sendCodeToServer(conversation);
+                        } 
+                        else{
+                            if(sendTimeOut[conversation.id] != undefined) clearTimeout(sendTimeOut[conversation.id]);
+                            changeCount[conversation.id]++;
+                            sendTimeOut[conversation.id] = setTimeout(function(){
+                                sendCodeToServer(conversation);
+                            },300);
+                        }
+                        conversation.code = code;
                      }
                  }
              })

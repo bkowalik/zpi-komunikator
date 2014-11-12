@@ -115,7 +115,6 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     };
 
                     $scope.openModal = function () {
-                        console.log(ConversationService.getConversations());
                         var modalInstance = $modal.open(
                             {
                                 templateUrl: 'editor/modals/convModal.html',
@@ -138,6 +137,11 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                                 hljs.highlightBlock(block);
                             });
                         });
+                    };
+
+                    $scope.codeChange = function(evt, conv) {
+                        ConversationService.changeCode(evt.target.innerText, conv);
+                        $scope.conversations = ConversationService.getConversations();
                     };
 
                     $scope.init();
