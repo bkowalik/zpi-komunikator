@@ -1,5 +1,6 @@
 package actors
 
+import actors.FileProtocol.Diff
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorLogging, ActorRef, Props, Actor}
 import play.api.libs.json.{Json, JsValue}
@@ -15,10 +16,12 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
       log.debug(s"$name sending to output")
       out ! Json.toJson(message)
     }
+
     case message: Envelope with ESender => {
       log.debug(s"$name sending to manager")
       manager ! message
     }
+
     case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }
 

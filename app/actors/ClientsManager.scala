@@ -3,6 +3,7 @@ package actors
 import java.util.UUID
 
 import actors.DatabaseProtocol.{StoredMessages, RecoverMessage, StoreMessage}
+import actors.FileProtocol.Diff
 import actors.ManagerProtocol.{GiveAllOnline, CheckFriendsAvailability, UnregisterClient, RegisterClient}
 import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import akka.util.Timeout
@@ -36,6 +37,7 @@ class ClientsManager() extends Actor with ActorLogging {
         clients.updated(name, Set(channel))
       }
     }
+
     case UnregisterClient(name, channel) => {
       clients = clients.get(name).map { channels =>
         log.debug(s"Unregister $name")
@@ -50,47 +52,67 @@ class ClientsManager() extends Actor with ActorLogging {
         clients
       }
     }
+
     case msg: Envelope with ESender => {
       log.debug("Get message")
-      val newMsg = new Envelope(msg.to, msg.uuid, msg.kind, msg.payload) with EDated with ESender {
-        val date = new DateTime()
-        val from = msg.from
-      }
-      log.debug(s"Received message from ${newMsg.from} to ${newMsg.to}")
+      log.debug(s"Received message from ${msg.from} to ${msg.to}")
       msg.kind match {
-        case TextMessageType => newMsg.to.filter(_ != newMsg.from).map { receiver =>
-          clients.get(receiver).map { sockets =>
-            sockets.foreach { actor =>
-              log.debug("Receiver is connected, redirecting")
-              actor ! newMsg
+        case TextMessageType => {
+          val newMsg = new Envelope(msg.to, msg.uuid, msg.kind, msg.payload) with EDated with ESender {
+            val date = new DateTime()
+            val from = msg.from
+          }
+          msg.to.filter(_ != newMsg.from).map { receiver =>
+            clients.get(receiver).map { sockets =>
+              sockets.foreach { actor =>
+                log.debug("Receiver is connected, redirecting")
+                actor ! newMsg
+              }
+            } getOrElse {
+              log.debug("Receiver is not connected")
+              val message = Json.fromJson[TextMessage](msg.payload).get
+              //database ! StoreMessage(newMsg)
             }
-          } getOrElse {
-            log.debug("Receiver is not connected")
-            val message = Json.fromJson[TextMessage](msg.payload).get
-            //database ! StoreMessage(newMsg)
           }
         }
-        case DiffSyncType => {
-          newMsg.to.headOption.fold {
-            val uuid = UUID.randomUUID()
-            newMsg.from
-            context.actorOf(FileActor.props(???, ???))
-          } {
-            ???
+        /*case DiffSyncType => {
+          Json.fromJson[DiffSync](msg.payload) match {
+            case NewSession(text) => {
+              val uuid = UUID.randomUUID()
+              val newMsg = new Envelope(msg.to, Option(uuid.toString), msg.kind, msg.payload) with EDated with ESender {
+                val date = new DateTime()
+                val from = msg.from
+              }
+              val shadows = msg.to.flatMap { client =>
+                clients.get(client)
+              }.flatten.map(_ -> text).toMap
+
+              val fileActor = context.actorOf(FileActor.props(text, shadows))
+              diffSyncs = diffSyncs + (uuid -> fileActor)
+
+              shadows.keys.foreach(_ ! newMsg)
+            }
+            case Patch(text) => {
+              val uuid = UUID.fromString(msg.uuid.get)
+              diffSyncs.get(uuid).foreach(_ ! Diff(text))
+            }
           }
-        }
+        }*/
       }
     }
+
     case CheckFriendsAvailability(friends) => {
       clients.filterKeys(friends.toSet).map {
         case (client, connections) => client -> connections.nonEmpty
       }
     }
+
     case StoredMessages(to, messages) => {
       clients.get(to).map { channels =>
         log.debug("Sending stored messages")
       }
     }
+
     case com: UserLoggedIn => notifyUserLoggedIn(com)
     case com: UserLoggedOut => notifyUserLoggedOut(com)
     case GiveAllOnline => sender() ! clients.keys
