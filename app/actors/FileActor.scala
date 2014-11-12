@@ -44,7 +44,7 @@ class FileActor(val text: String, val shadows: Map[ActorRef, String] = Map.empty
     case RemoveClient(client) =>
       context.become(receiveWith(text, shadows - client))
     case GetText => sender() ! Text(text)
-    case unknown => log.warning(s"Unknown message ${unknown.toString}")
+    case unknown => log.error(s"Unknown message ${unknown.toString}")
   }
 
 }
