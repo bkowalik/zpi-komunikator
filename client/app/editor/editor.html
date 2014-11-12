@@ -3,7 +3,7 @@
         <div class="navbar-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}{{conversation.new_message ? ' blink':''}}">
-                    <a href ng-click="$parent.actual_tab=$index || clearNotification(conversation)" class="menu-clearfix">
+                    <a href ng-click="$parent.actual_tab=$index; clearNotification(conversation)" class="menu-clearfix">
                         {{conversation.name}}
                     </a>
                     <a href ng-click="closeConversation()" class="menu-clearfix">
@@ -72,14 +72,15 @@
                             <div class="input-group">
                                 <input id="btn-input" type="text" class="form-control input-sm"
                                        placeholder="Type your message here..." ng-model="$parent.message" ng-enter="sendMessageOnEnter(conversation)" />
-                                <span class="input-group-btn">
-                                <button class="btn btn-info btn-sm" id="btn-chat" ng-click="sendMessage(conversation)">
-                                    Send
-                                </button>
-                                </span>
+                                <div class="input-group-btn">
+                                    <button class="btn btn-info btn-sm" id="btn-chat" ng-click="sendMessage(conversation)">
+                                        Send
+                                    </button>
+
+                                </div>
                             </div>
                             <div class="checkbox">
-                                <label><input type="checkbox" class="checkbox" ng-checked="true" ng-model="$parent.sendOnEnterEnabled">Send on RETURN key</label>
+                                <label><input type="checkbox" class="checkbox" ng-checked="true" ng-model="parent.sendOnEnterEnabled">Send on RETURN key</label>
                             </div>
                         </div>
                     </div>
