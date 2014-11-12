@@ -4,6 +4,7 @@
 angular.module('developerCommunicator', [
     'ui.bootstrap',
     'ngRoute',
+    'angular-md5',
     'developerCommunicator.editor',
     'developerCommunicator.settings',
     'developerCommunicator.history',
@@ -136,7 +137,7 @@ angular.module('developerCommunicator', [
                  };
              })
 
-    .factory('ConversationService', function (UserService, UserGraphic) {
+    .factory('ConversationService', function (UserService, UserGraphic, md5) {
                  var conversations = [];
                  var observerCallbacks = [];
 
@@ -198,7 +199,13 @@ angular.module('developerCommunicator', [
                  };
 
                  var sendCodeToServer = function(conv){
-                    console.log("send!!");
+                    var diff_tool = new diff_match_patch();
+                    var diff = diff_tool.diff_main(conv.code, conv.shadow_code);
+                    conv.shadow_code = conv.code;
+                    var hash = md5.createHash(conv.code);
+
+                    console.log(diff);
+                    console.log(hash);
                  };
 
                  UserService.setNewConversationHandler(setConversation);
@@ -216,6 +223,11 @@ angular.module('developerCommunicator', [
                              name: convName,
                              id: guid(),
                              code: 'public class Hello222{\n' +
+                             '\tpublic static void main(String[] args) {\n' +
+                             '\t\tSystem.out.print("Hello World");\n' +
+                             '\t}\n' +
+                             '}\n',
+                             shadow_code: 'public class Hello222{\n' +
                              '\tpublic static void main(String[] args) {\n' +
                              '\t\tSystem.out.print("Hello World");\n' +
                              '\t}\n' +
