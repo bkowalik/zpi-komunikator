@@ -7,6 +7,7 @@ import actors.FileProtocol._
 import akka.actor.{Props, ActorRef, ActorLogging, Actor}
 import com.sksamuel.diffpatch.DiffMatchPatch
 import com.sksamuel.diffpatch.DiffMatchPatch.Patch
+import play.api.libs.json.{JsResult, JsValue, Reads}
 
 class FileActor(val text: String, val shadows: Map[ActorRef, String] = Map.empty) extends Actor with ActorLogging {
 
@@ -58,6 +59,7 @@ sealed trait FileProtocol
 
 object FileProtocol {
   case class DiffFromClient(client: ActorRef, diff: String, md5: String) extends FileProtocol
+
   case class AddClient(client: ActorRef) extends FileProtocol
   case class RemoveClient(client: ActorRef) extends FileProtocol
   case object GetText extends FileProtocol

@@ -4,7 +4,7 @@ import actors.FileProtocol.Diff
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorLogging, ActorRef, Props, Actor}
 import play.api.libs.json.{Json, JsValue}
-import protocol.{ESender, EDated, Envelope, TextMessage}
+import protocol._
 import services.ManagerService
 
 class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {

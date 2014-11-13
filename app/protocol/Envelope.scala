@@ -36,34 +36,115 @@ object UserLoggedOut {
 }
 
 sealed trait DiffSync
-object DiffSync {
-  implicit val reads = new Reads[DiffSync] {
-    def reads(json: JsValue): JsResult[DiffSync] = {
-      val text = (json \ "text").as[String]
-      val obj = (json \ "kind").as[String] match {
-        case "NewSession" => NewSession(text)
-        case "Patch" => Patch(text)
-      }
-
-      JsSuccess(obj)
-    }
-  }
-
-  implicit val writes = new Writes[DiffSync] {
-    def writes(o: DiffSync): JsValue = o match {
-      case msg @ NewSession(text) => Json.obj(
-        "kind" -> "NewSession",
-        "text" -> text
-      )
-      case msg @ Patch(text) => Json.obj(
-        "kind" -> "Patch",
-        "text" -> text
+case class NewSessionAck() extends DiffSync
+object NewSessionAck {
+  implicit val writes = new Writes[NewSessionAck] {
+    def writes(o: NewSessionAck): JsValue = {
+      Json.obj(
+        "kind" -> "NewSessionAck"
       )
     }
   }
 }
 case class NewSession(text: String) extends DiffSync
-case class Patch(text: String) extends DiffSync
+object NewSession {
+  implicit val reads = Json.reads[NewSession]
+  implicit val writes = new Writes[NewSession] {
+    def writes(obj: NewSession): JsValue = {
+      Json.obj(
+        "kind" -> "NewSession",
+        "text" -> obj.text
+      )
+    }
+  }
+}
+case class CloseSession() extends DiffSync
+object CloseSession {
+  implicit val reads = Json.reads[CloseSession]
+  implicit val writes = new Writes[CloseSession] {
+    def writes(obj: CloseSession): JsValue = {
+      Json.obj(
+        "kind" -> "CloseSession"
+      )
+    }
+  }
+}
+case class AddUser(username: String) extends DiffSync
+object AddUser {
+  implicit val reads = Json.reads[AddUser]
+  implicit val writes = new Writes[AddUser] {
+    def writes(o: AddUser): JsValue = {
+      Json.obj(
+        "kind" -> "AddUser",
+        "username" -> o.username
+      )
+    }
+  }
+}
+case class RemoveUser(username: String) extends DiffSync
+object RemoveUser {
+  implicit val reads = Json.reads[RemoveUser]
+  implicit val writes = new Writes[RemoveUser] {
+    def writes(o: RemoveUser): JsValue = {
+      Json.obj(
+        "kind" -> "RemoveUser",
+        "username" -> o.username
+      )
+    }
+  }
+}
+case class Text(text: String) extends DiffSync
+object Text {
+  implicit val writes = new Writes[Text] {
+    def writes(obj: Text): JsValue = {
+      Json.obj(
+        "kind" -> obj.getClass.getSimpleName,
+        "text" -> obj.text
+      )
+    }
+  }
+}
+case class Diff(text: String) extends DiffSync
+trait CheckSumMD5 {
+  this: Diff =>
+  val md5: String
+}
+object Diff {
+  implicit val formatter = new Format[Diff] {
+    def reads(json: JsValue): JsResult[Diff] = {
+      val md5Str = (json \ "md5").as[String]
+      val text = (json \ "diff").as[String]
+
+      JsSuccess(new Diff(text) with CheckSumMD5 {
+        val md5: String = md5Str
+      })
+    }
+
+    def writes(o: Diff): JsValue = {
+      val md5 = o match {
+        case a: CheckSumMD5 => Option(a.md5)
+        case _ => None
+      }
+
+      JsObject(
+        md5.map(m => "md5" -> JsString(m)).toSeq ++ Seq("diff" -> JsString(o.text), "kind" -> JsString(o.getClass.getSimpleName))
+      )
+    }
+  }
+}
+object DiffSync {
+  implicit val reads = new Reads[DiffSync] {
+    def reads(json: JsValue): JsResult[DiffSync] = {
+      (json \ "kind").as[String] match {
+        case "NewSession" => Json.fromJson[NewSession](json)
+        case "CloseSession" => Json.fromJson[CloseSession](json)
+        case "Diff" => Json.fromJson[Diff](json)
+        case "AddUser" => Json.fromJson[AddUser](json)
+        case "RemoveUser" => Json.fromJson[RemoveUser](json)
+      }
+    }
+  }
+}
 
 object Envelope {
   implicit val reads = new Reads[Envelope] {
