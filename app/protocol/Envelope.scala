@@ -60,7 +60,11 @@ object NewSession {
 }
 case class CloseSession() extends DiffSync
 object CloseSession {
-  implicit val reads = Json.reads[CloseSession]
+  implicit val reads = new Reads[CloseSession] {
+    def reads(json: JsValue): JsResult[CloseSession] = {
+      JsSuccess(CloseSession())
+    }
+  }
   implicit val writes = new Writes[CloseSession] {
     def writes(obj: CloseSession): JsValue = {
       Json.obj(

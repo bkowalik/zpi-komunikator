@@ -34,12 +34,11 @@ class DiffSyncProtocolTest extends FlatSpec with Matchers {
 
   it should "serialize CloseSession" in {
     val uuid = UUID.randomUUID()
-    val closeSession = CloseSession(uuid)
+    val closeSession = CloseSession()
 
     val json = Json.toJson(closeSession)
 
     (json \ "kind").as[String] should equal("CloseSession")
-    (json \ "id").as[UUID] should equal(uuid)
   }
 
   it should "deserialize CloseSession" in {
