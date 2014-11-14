@@ -1,11 +1,13 @@
 package protocol
 
+import java.util.UUID
+
 import org.joda.time.DateTime
 import play.api.libs.json._
 import protocol.MessageTypes.MessageType
 import utils.{DateTimeFormatters, EnumUtils}
 
-case class Envelope(to: Set[String], uuid: Option[String], kind: MessageType, payload: JsValue)
+case class Envelope(to: Set[String], uuid: Option[UUID], kind: MessageType, payload: JsValue)
 
 trait EDated {
   this: Envelope =>
@@ -34,16 +36,6 @@ object UserLoggedOut {
 }
 
 sealed trait DiffSync
-case class NewSessionAck() extends DiffSync
-object NewSessionAck {
-  implicit val writes = new Writes[NewSessionAck] {
-    def writes(o: NewSessionAck): JsValue = {
-      Json.obj(
-        "kind" -> "NewSessionAck"
-      )
-    }
-  }
-}
 case class NewSession(text: String) extends DiffSync
 object NewSession {
   implicit val reads = Json.reads[NewSession]
@@ -152,7 +144,7 @@ object Envelope {
   implicit val reads = new Reads[Envelope] {
     def reads(json: JsValue): JsResult[Envelope] = {
       val to = (json \ "to").asOpt[Set[String]].getOrElse(Set.empty)
-      val uuid = (json \ "id").asOpt[String]
+      val uuid = (json \ "id").asOpt[UUID]
       val kind = (json \ "kind").as[MessageType]
       val payload = json \ "payload"
 

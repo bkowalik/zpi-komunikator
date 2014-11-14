@@ -23,7 +23,7 @@ class ClientTalkActor(val name: String, out: ActorRef, val manager: ActorRef) ex
     }
 
     case FileProtocol.Diff(id, changer, text) =>
-      self ! new Envelope(Set.empty, Option(id.toString), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
+      self ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
         val date: DateTime = new DateTime()
         val from: String = changer
       }
