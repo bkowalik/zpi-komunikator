@@ -1,8 +1,9 @@
 package actors
 
 import java.security.MessageDigest
+import java.util.UUID
 
-import actors.FileProtocol.{Text, GetText, DiffFromClient, AddClient}
+import actors.FileProtocol._
 import akka.actor.{Props, Actor, ActorLogging, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.sksamuel.diffpatch.DiffMatchPatch
@@ -50,13 +51,15 @@ class FileOperationsTest(_system: ActorSystem) extends TestKit(_system) with Imp
     """.stripMargin
 
   it should "work with FileActor" in {
-    val fileActor = system.actorOf(FileActor.props(oldSource, Map.empty), "fileActor")
+    val fileActor = system.actorOf(FileActor.props(UUID.randomUUID(), oldSource, Map.empty), "fileActor")
 
     val maniek = system.actorOf(Props[DummyActor], "maniek")
     val zenek = system.actorOf(Props[DummyActor], "zenek")
 
-    fileActor ! AddClient(maniek)
-    fileActor ! AddClient(zenek)
+    fileActor ! AddClient(Set(Client("maniek", maniek)))
+    receiveOne(5 seconds) shouldBe a[AddClientAck]
+    fileActor ! AddClient(Set(Client("zenek", zenek)))
+    receiveOne(5 seconds) shouldBe a[AddClientAck]
 
     val patchText = dmp.patch_toText(dmp.patch_make(oldSource, newSource))
 

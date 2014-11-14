@@ -3,8 +3,9 @@ package actors
 import java.util.UUID
 
 import actors.DatabaseProtocol.{StoredMessages, RecoverMessage, StoreMessage}
-import actors.FileProtocol.{RemoveClient, Diff}
+import actors.FileProtocol.{RemoveClient, RemoveClientByName, Diff}
 import actors.ManagerProtocol.{GiveAllOnline, CheckFriendsAvailability, UnregisterClient, RegisterClient}
+import actors.manager.handlers.{DiffSyncMessageHandler, TextMessageHandler}
 import akka.actor.{Props, ActorLogging, ActorRef, Actor}
 import akka.util.Timeout
 import org.joda.time.DateTime
@@ -14,14 +15,14 @@ import protocol.MessageTypes._
 import akka.pattern.{ask, pipe}
 import scala.concurrent.duration._
 
-class ClientsManager() extends Actor with ActorLogging {
+class ClientsManager() extends Actor with ActorLogging
+  with TextMessageHandler
+  with DiffSyncMessageHandler {
   import context.dispatcher
 
-  implicit val timeout: Timeout = 5 seconds
+  var clients = Map.empty[String, Set[ActorRef]].withDefault(name => throw new Exception(s"Missing client $name"))
 
-  var clients = Map.empty[String, Set[ActorRef]]
-
-  var diffSyncs = Map.empty[UUID, ActorRef]
+  var diffSyncs = Map.empty[UUID, ActorRef].withDefault(id => throw new Exception(s"Missing session ID: $id"))
 
   context.system.scheduler.schedule(Duration.Zero, 20 seconds, self, KeepAlive)
 
@@ -41,7 +42,7 @@ class ClientsManager() extends Actor with ActorLogging {
     case UnregisterClient(name, channel) => {
       clients = clients.get(name).map { channels =>
         log.debug(s"Unregister $name")
-        diffSyncs.values.foreach(_ ! RemoveClient(channel))
+        diffSyncs.values.foreach(_ ! RemoveClient(Client(name, channel)))
         if((channels - channel).isEmpty) {
           self ! UserLoggedOut(name)
           clients - name
@@ -57,32 +58,13 @@ class ClientsManager() extends Actor with ActorLogging {
     case msg: Envelope with ESender => {
       log.debug("Get message")
       log.debug(s"Received message from ${msg.from} to ${msg.to}")
-      msg.kind match {
-        case TextMessageType => {
-          val newMsg = new Envelope(msg.to, msg.uuid, msg.kind, msg.payload) with EDated with ESender {
-            val date = new DateTime()
-            val from = msg.from
-          }
-          msg.to.filter(_ != newMsg.from).map { receiver =>
-            clients.get(receiver).map { sockets =>
-              sockets.foreach { actor =>
-                log.debug("Receiver is connected, redirecting")
-                actor ! newMsg
-              }
-            } getOrElse {
-              log.debug("Receiver is not connected")
-              val message = Json.fromJson[TextMessage](msg.payload).get
-              //database ! StoreMessage(newMsg)
-            }
-          }
-        }
-        case DiffSyncType => {
-          (msg.payload \ "kind").as[String] match {
-            case "DiffFromClient" =>
-            case "AddClient" =>
-            case "RemoveClient" =>
-          }
-        }
+      val newMsg = new Envelope(msg.to, msg.uuid, msg.kind, msg.payload) with EDated with ESender {
+        val date = new DateTime()
+        val from = msg.from
+      }
+      newMsg.kind match {
+        case TextMessageType => textMessageHandler(newMsg)
+        case DiffSyncType => diffSyncHandler(newMsg)
       }
     }
 
@@ -135,7 +117,6 @@ class ClientsManager() extends Actor with ActorLogging {
 
 object ClientsManager {
   def props(): Props = Props(classOf[ClientsManager])
-  case class Client(name: String, channel: ActorRef)
 }
 
 sealed trait ManagerProtocol

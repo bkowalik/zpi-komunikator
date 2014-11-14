@@ -1,13 +1,13 @@
 package actors
 
-import actors.FileProtocol.Diff
 import actors.ManagerProtocol.{UnregisterClient, RegisterClient}
 import akka.actor.{ActorLogging, ActorRef, Props, Actor}
+import org.joda.time.DateTime
 import play.api.libs.json.{Json, JsValue}
 import protocol._
 import services.ManagerService
 
-class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
+class ClientTalkActor(val name: String, out: ActorRef, val manager: ActorRef) extends Actor with ActorLogging with DeserializeMessages {
   assert(out != null)
   assert(manager != null)
 
@@ -21,6 +21,12 @@ class ClientTalkActor(val name: String, out: ActorRef, manager: ActorRef) extend
       log.debug(s"$name sending to manager")
       manager ! message
     }
+
+    case FileProtocol.Diff(id, changer, text) =>
+      self ! new Envelope(Set.empty, Option(id.toString), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
+        val date: DateTime = new DateTime()
+        val from: String = changer
+      }
 
     case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }

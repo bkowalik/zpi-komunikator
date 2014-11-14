@@ -1,7 +1,5 @@
 package protocol
 
-import java.util.UUID
-
 import org.joda.time.DateTime
 import play.api.libs.json._
 import protocol.MessageTypes.MessageType
