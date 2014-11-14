@@ -53,7 +53,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       context.become(receiveWith(text, shadows.filter(_._2 != clientName)))
     case RemoveClient(client) =>
       context.become(receiveWith(text, shadows - client))
-    case GetText => sender() ! Text(text)
+    case GetText => sender() ! Text(id, text)
     case Participants => sender() ! ParticipantsList(shadows.keys)
     case unknown => log.error(s"Unknown message ${unknown.toString}")
   }
@@ -81,7 +81,7 @@ object FileProtocol {
   case class ParticipantsList(participants: Iterable[Client])
 
   case class Diff(id: UUID, sender: String, text: String) extends FileProtocol
-  case class Text(text: String) extends FileProtocol
+  case class Text(id: UUID, text: String) extends FileProtocol
 }
 
 case class Client(username: String, actor: ActorRef)

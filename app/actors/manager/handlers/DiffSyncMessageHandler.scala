@@ -18,19 +18,19 @@ trait DiffSyncMessageHandler extends AskTimeout {
     Json.fromJson[DiffSync](msg.payload).get match {
       case NewSession(text) => {
         val id = msg.uuid.getOrElse(throw new Exception("Missing document share id"))
-        val shadows = clients(msg.from).filter(_ != sender()).map(client => client -> text).toMap
+        val shadows = clients(msg.from).map(client => client -> text).toMap
         val fileActor = context.system.actorOf(FileActor.props(id, text, shadows))
 
         diffSyncs = diffSyncs + (id -> fileActor)
 
-        val rest = shadows.keySet - sender()
+        val rest = shadows.keySet
 
         val toAllMsg = new Envelope(msg.to, msg.uuid, MessageTypes.DiffSyncType, msg.payload) with ESender with EDated {
           val from: String = msg.from
           val date: DateTime = msg.date
         }
 
-        (clients.filterKeys(msg.to).flatMap(_._2) ++ rest).foreach (_ ! toAllMsg)
+        (clients.filterKeys(msg.to).flatMap(_._2) ++ rest).toSet.filter(_ != sender()).foreach (_ ! toAllMsg)
       }
 
       case CloseSession() => {

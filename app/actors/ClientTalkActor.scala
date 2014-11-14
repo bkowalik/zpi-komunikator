@@ -28,6 +28,11 @@ class ClientTalkActor(val name: String, out: ActorRef, val manager: ActorRef) ex
         val from: String = changer
       }
 
+    case FileProtocol.Text(id, text) =>
+      self ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Text(text))) with EDated {
+        val date: DateTime = new DateTime()
+      }
+
     case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }
 
