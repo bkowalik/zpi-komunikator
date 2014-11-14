@@ -57,7 +57,8 @@ angular.module('developerCommunicator', [
                          ws.onmessage = function (event) {
                              var server_message = JSON.parse(event.data);
 
-                             console.log("Received message");
+                             console.log("Received message: " + server_message.kind);
+
 
                              switch (server_message["kind"]) {
                                  case "TextMessageType":
@@ -193,6 +194,7 @@ angular.module('developerCommunicator', [
                              hljs.highlightBlock(block);
                          });
                      });
+
                      UserService.addMessageListener(conversation.id, receiveMessage);
                  };
 
@@ -220,12 +222,18 @@ angular.module('developerCommunicator', [
                      if (ws.readyState === 1) {
                          ws.send(JSON.stringify(
                                      {
-                                         kind: 'Diff',
+                                         from: UserService.currentUser(),
+                                         to: conv.contributors,
                                          id: conv.id,
-                                         text: diff,
-                                         md5: hash
+                                         kind: 'DiffSyncType',
+                                         payload: {
+                                             kind: 'Diff',
+                                             text: diff,
+                                             md5: hash
+                                         }
                                      })
                          );
+                         console.log("Diff message sent.")
                      } else {
                          console.log("WebSocket closed. Message was not sent.")
                      }
@@ -268,6 +276,27 @@ angular.module('developerCommunicator', [
                          });
                          UserService.sendMessage(convName, conversation.contributors, conversation.id);
                          UserService.addMessageListener(conversation.id, this.receiveMessage);
+
+                         var ws = UserService.getWs();
+
+                         if (ws.readyState === 1) {
+                             ws.send(JSON.stringify(
+                                         {
+                                             from: UserService.currentUser(),
+                                             to: conversation.contributors,
+                                             id: conversation.id,
+                                             kind: 'DiffSyncType',
+                                             payload: {
+                                                 kind: 'NewSession',
+                                                 text: conversation.code
+                                             }
+                                         })
+                             );
+
+                             console.log("New session started.")
+                         } else {
+                             console.log("WebSocket closed. Message was not sent.")
+                         }
                      },
 
                      sendMessage: function (message, conversation) {
@@ -312,6 +341,7 @@ angular.module('developerCommunicator', [
                      getConversations: function () {
                          return conversations;
                      },
+
                      changeCode: function(code, conv) {
                         var conversation = _.find(conversations, function (conv_it) {
                             return conv_it.id == conv.id
