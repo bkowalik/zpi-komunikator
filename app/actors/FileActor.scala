@@ -41,7 +41,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       else {
         log.warning(s"Patch $diff from $client produced invalid text.")
         log.warning(s"Sending server text to $client")
-        client ! Text(text)
+        client ! Text(id, text)
       }
     case AddClient(clients) =>
       val newShadow = clients.foldLeft(shadows) { (acc, client) =>
