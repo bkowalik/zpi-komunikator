@@ -133,6 +133,10 @@ angular.module('developerCommunicator', [
                          console.log("Registered handler");
 
                          newConversationHandler = value;
+                     },
+
+                     getWs: function() {
+                         return ws;
                      }
                  };
              })
@@ -198,14 +202,33 @@ angular.module('developerCommunicator', [
                      });
                  };
 
-                 var sendCodeToServer = function(conv){
-                    var diff_tool = new diff_match_patch();
-                    var diff = diff_tool.diff_main(conv.code, conv.shadow_code);
-                    conv.shadow_code = conv.code;
-                    var hash = md5.createHash(conv.code);
+                 var sendCodeToServer = function (conv) {
+                     var diff_tool = new diff_match_patch();
+                     var diff = diff_tool.diff_main(conv.code, conv.shadow_code);
+                     conv.shadow_code = conv.code;
+                     var hash = md5.createHash(conv.code);
 
-                    console.log(diff);
-                    console.log(hash);
+                     sendMessage(diff, hash, conv);
+
+                     console.log(diff);
+                     console.log(hash);
+                 };
+
+                 var sendMessage = function (diff, hash, conv) {
+                     var ws = UserService.getWs();
+
+                     if (ws.readyState === 1) {
+                         ws.send(JSON.stringify(
+                                     {
+                                         kind: 'Diff',
+                                         id: conv.id,
+                                         text: diff,
+                                         md5: hash
+                                     })
+                         );
+                     } else {
+                         console.log("WebSocket closed. Message was not sent.")
+                     }
                  };
 
                  UserService.setNewConversationHandler(setConversation);
@@ -295,7 +318,7 @@ angular.module('developerCommunicator', [
                         });   
                         if(changeCount[conversation.id] === undefined) changeCount[conversation.id] = 0;
 
-                        if(changeCount[conversation.id] == 5){
+                        if(changeCount[conversation.id] == 10){
                             sendTimeOut[conversation.id] = null;
                             changeCount[conversation.id] = 0;
                             sendCodeToServer(conversation);
@@ -305,7 +328,7 @@ angular.module('developerCommunicator', [
                             changeCount[conversation.id]++;
                             sendTimeOut[conversation.id] = setTimeout(function(){
                                 sendCodeToServer(conversation);
-                            },300);
+                            },1000);
                         }
                         conversation.code = code;
                      }
