@@ -210,7 +210,7 @@ angular.module('developerCommunicator', [
                      conv.shadow_code = conv.code;
                      var hash = md5.createHash(conv.code);
 
-                     sendMessage(diff, hash, conv);
+                     //sendMessage(diff, hash, conv);
 
                      console.log(diff);
                      console.log(hash);
@@ -240,6 +240,27 @@ angular.module('developerCommunicator', [
                  };
 
                  UserService.setNewConversationHandler(setConversation);
+
+                 var startNewDiffSession = function(conversation) {
+                     var ws = UserService.getWs();
+                     if (ws.readyState === 1) {
+                         ws.send(JSON.stringify(
+                                     {
+                                         from: UserService.currentUser(),
+                                         to: conversation.contributors,
+                                         id: conversation.id,
+                                         kind: 'DiffSyncType',
+                                         payload: {
+                                             kind: 'NewSession',
+                                             text: conversation.code
+                                         }
+                                     })
+                         );
+                         console.log("New session started.")
+                     } else {
+                         console.log("WebSocket closed. Message was not sent.")
+                     }
+                 };
 
                  return {
                      registerObserverCallback: function (callback) {
@@ -277,26 +298,7 @@ angular.module('developerCommunicator', [
                          UserService.sendMessage(convName, conversation.contributors, conversation.id);
                          UserService.addMessageListener(conversation.id, this.receiveMessage);
 
-                         var ws = UserService.getWs();
-
-                         if (ws.readyState === 1) {
-                             ws.send(JSON.stringify(
-                                         {
-                                             from: UserService.currentUser(),
-                                             to: conversation.contributors,
-                                             id: conversation.id,
-                                             kind: 'DiffSyncType',
-                                             payload: {
-                                                 kind: 'NewSession',
-                                                 text: conversation.code
-                                             }
-                                         })
-                             );
-
-                             console.log("New session started.")
-                         } else {
-                             console.log("WebSocket closed. Message was not sent.")
-                         }
+                         //startNewDiffSession(conversation);
                      },
 
                      sendMessage: function (message, conversation) {
