@@ -24,14 +24,14 @@ class ClientTalkActor(val name: String, out: ActorRef, val manager: ActorRef) ex
 
     case FileProtocol.Diff(id, changer, text) =>
       log.debug(s"Received diff from $id")
-      self ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
+      out ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
         val date: DateTime = new DateTime()
         val from: String = changer
       }
 
     case FileProtocol.Text(id, text) =>
       log.debug(s"Received text from $id")
-      self ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Text(text))) with EDated {
+      out ! new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Text(text))) with EDated {
         val date: DateTime = new DateTime()
       }
 
