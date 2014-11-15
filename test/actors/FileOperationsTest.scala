@@ -67,7 +67,7 @@ class FileOperationsTest(_system: ActorSystem) extends TestKit(_system) with Imp
 
     fileActor ! GetText
 
-    val response = receiveOne(5 seconds).asInstanceOf[Text].text
+    val response = receiveOne(5 seconds).asInstanceOf[TestText].text
 
     response shouldEqual newSource
   }

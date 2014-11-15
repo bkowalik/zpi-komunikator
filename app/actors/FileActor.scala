@@ -8,9 +8,6 @@ import actors.FileProtocol._
 import akka.actor.{Props, ActorRef, ActorLogging, Actor}
 import com.sksamuel.diffpatch.DiffMatchPatch
 import com.sksamuel.diffpatch.DiffMatchPatch.Patch
-import org.joda.time.DateTime
-import play.api.libs.json.{JsResult, JsValue, Reads}
-import protocol.{EDated, Envelope}
 
 class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.empty) extends Actor with ActorLogging {
 
@@ -30,12 +27,14 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
 
       val serverChecksum = md5(newText).toUpperCase
       if (serverChecksum == checksum.toUpperCase) {
-        val newShadows = shadows.map(tpl => tpl._1 -> tpl._2) map { case (client1, shadow) =>
-          val diff = dmp.patch_make(shadow, newText)
-          if (client1 != client)
-            client1.actor ! Diff(id, client.username, dmp.patch_toText(diff))
-          (client1, newText)
-        }
+        val newShadows = shadows.map { case (client1: Client, shadow: String) =>{
+            val diff = dmp.patch_make(shadow, newText)
+            if (client1 != client) {
+              client1.actor ! Diff(id, client.username, dmp.patch_toText(diff))
+            }
+            (client1, newText)
+          }
+        }.toMap[Client, String]
         context.become(receiveWith(newText, newShadows))
       }
       else {
@@ -55,7 +54,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       context.become(receiveWith(text, shadows.filter(_._2 != clientName)))
     case RemoveClient(client) =>
       context.become(receiveWith(text, shadows - client))
-    case GetText => sender() ! Text(id, text)
+    case GetText => sender() ! TestText(id, text)
     case Participants => sender() ! ParticipantsList(shadows.keys)
     case unknown => log.error(s"Unknown message ${unknown.toString}")
   }
@@ -63,7 +62,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
 }
 
 object FileActor {
-  def props(id: UUID, text: String, shadows: Map[ActorRef, String] = Map.empty) =
+  def props(id: UUID, text: String, shadows: Map[Client, String] = Map.empty) =
     Props(classOf[FileActor], id, text, shadows)
 }
 
@@ -77,6 +76,7 @@ object FileProtocol {
   case class RemoveClientByName(client: String) extends FileProtocol
   case class RemoveClient(client: Client)
   case object GetText extends FileProtocol
+  case class TestText(id: UUID, text: String) extends FileProtocol
   case object RemoveAll extends FileProtocol
 
   case object Participants
