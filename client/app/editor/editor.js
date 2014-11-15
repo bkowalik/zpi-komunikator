@@ -150,8 +150,18 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
 
                             $scope.moreUsersOnline =$(data.online).not($scope.conversations[$scope.actual_tab].contributors).get();
                         });
+                    };
 
-                        console.log($scope.moreUsersOnline);
+                    $scope.addUser = function(name) {
+                        console.log("I'm going to add " + name);
+                    };
+
+                    $scope.removeUser = function(name) {
+                        console.log("I'm going to kick off " + name);
+                    };
+
+                    $scope.closeConversation = function(tab_nr, name) {
+                        console.log("I'm going to kick off " + name + ' from ' + tab_nr);
                     };
 
                     $scope.init();
