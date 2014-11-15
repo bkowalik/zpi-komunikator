@@ -1,7 +1,9 @@
 import sbt._
 import Keys._
 import play.Play.autoImport._
-import PlayKeys._
+import com.typesafe.sbt.SbtNativePackager._
+import com.typesafe.sbt.packager.Keys._
+
 
 object ZPIServer extends Build {
 
@@ -35,7 +37,11 @@ object ZPIServer extends Build {
     .settings(
       version := "0.1",
       scalaVersion := "2.11.3",
-      libraryDependencies ++= deps
+      libraryDependencies ++= deps,
+      maintainer in Linux := "mgw",
+      packageSummary in Linux := "Developers' communicator",
+      packageDescription := "stub",
+      debianPackageDependencies in Debian ++= Seq("java-runtime")
     )
 
   //System.setProperty("macwire.debug", "")
