@@ -282,7 +282,7 @@ angular.module('developerCommunicator', [
 
                  var setConversation = function (message) {
                      var users = message.to;
-                     users.push(UserService.currentUser());
+                     //users.push(UserService.currentUser());
 
                      var conversation = {
                          name: message.payload.message,
