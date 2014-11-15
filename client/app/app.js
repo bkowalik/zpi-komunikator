@@ -299,7 +299,7 @@ angular.module('developerCommunicator', [
 
                  var sendCodeToServer = function (conv) {
                      var diff_tool = new diff_match_patch();
-                     var patchRaw = diff_tool.patch_make(conv.code, conv.shadow_code);
+                     var patchRaw = diff_tool.patch_make(conv.shadow_code, conv.code);
                      var patch = diff_tool.patch_toText(patchRaw);
                      //console.log(diff_tool.diff_prettyHtml(diff))
                      conv.shadow_code = conv.code;
