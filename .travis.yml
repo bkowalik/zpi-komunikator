@@ -5,6 +5,10 @@ jdk:
     - openjdk7
 sbt_args: -no-colors
 
+cache:
+    directories:
+        - $HOME/.m2
+
 after_success:
     - sbt dist
     - chmod 0400 /home/travis/build/bkowalik/zpi-komunikator/zpi-server.pem
