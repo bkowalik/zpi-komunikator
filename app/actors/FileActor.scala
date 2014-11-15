@@ -22,7 +22,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
 
   def receive = receiveWith(text, shadows)
 
-  def receiveWith(text:String, shadows: Map[Client, String]): Receive = {
+  def receiveWith(text: String, shadows: Map[Client, String]): Receive = {
     case DiffFromClient(client, diff, checksum) =>
       val patch = dmp.patch_fromText(diff)
       val WTFWhoReturnsAnArrayOfObjects = dmp.patch_apply(new util.LinkedList[Patch](patch), text)
@@ -30,13 +30,13 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       val changer = shadows.keys.filter(_.actor == client).head
 
       if (md5(newText) == checksum) {
-        shadows.map(tpl => tpl._1.actor -> tpl._2) map { case (client1, shadow) =>
+        val newShadows = shadows.map(tpl => tpl._1 -> tpl._2) map { case (client1, shadow) =>
           val diff = dmp.patch_make(shadow, newText)
-          if (client1 != client)
-            client1 ! Diff(id, changer.username, dmp.patch_toText(diff))
-          (client, newText)
+          if (client1.actor != client)
+            client1.actor ! Diff(id, changer.username, dmp.patch_toText(diff))
+          (client1, newText)
         }
-        context.become(receiveWith(newText, shadows))
+        context.become(receiveWith(newText, newShadows))
       }
       else {
         log.warning(s"Patch $diff from $client produced invalid text.")
