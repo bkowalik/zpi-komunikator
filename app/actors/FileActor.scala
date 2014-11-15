@@ -27,13 +27,12 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       val patch = dmp.patch_fromText(diff)
       val WTFWhoReturnsAnArrayOfObjects = dmp.patch_apply(new util.LinkedList[Patch](patch), text)
       val newText = WTFWhoReturnsAnArrayOfObjects(0).asInstanceOf[String]
-      val changer = shadows.keys.filter(_.actor == client).head
 
       if (md5(newText) == checksum) {
         val newShadows = shadows.map(tpl => tpl._1 -> tpl._2) map { case (client1, shadow) =>
           val diff = dmp.patch_make(shadow, newText)
-          if (client1.actor != client)
-            client1.actor ! Diff(id, changer.username, dmp.patch_toText(diff))
+          if (client1 != client)
+            client1.actor ! Diff(id, client.username, dmp.patch_toText(diff))
           (client1, newText)
         }
         context.become(receiveWith(newText, newShadows))
@@ -41,7 +40,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       else {
         log.warning(s"Patch $diff from $client produced invalid text.")
         log.warning(s"Sending server text to $client")
-        client ! Text(id, text)
+        client.actor ! Text(id, text)
       }
     case AddClient(clients) =>
       val newShadow = clients.foldLeft(shadows) { (acc, client) =>
@@ -68,7 +67,7 @@ object FileActor {
 sealed trait FileProtocol
 
 object FileProtocol {
-  case class DiffFromClient(client: ActorRef, diff: String, md5: String) extends FileProtocol
+  case class DiffFromClient(client: Client, diff: String, md5: String) extends FileProtocol
 
   case class AddClient(client: Set[Client]) extends FileProtocol
   case class AddClientAck(id: UUID, client: Set[Client], text: String, participants: Iterable[Client]) extends FileProtocol

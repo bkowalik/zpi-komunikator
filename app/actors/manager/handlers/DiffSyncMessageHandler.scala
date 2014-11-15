@@ -114,7 +114,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
         val id = msg.uuid.getOrElse(throw new Exception("Missing field id in DiffSyncType message"))
         val fileActor = diffSyncs(id)
 
-        fileActor ! FileProtocol.DiffFromClient(sender(), innerMsg.text, innerMsg.md5)
+        fileActor ! FileProtocol.DiffFromClient(Client(msg.from, sender()), innerMsg.text, innerMsg.md5)
       }
 
       case unknown => log.warning(s"Unknown message ${unknown.toString}")

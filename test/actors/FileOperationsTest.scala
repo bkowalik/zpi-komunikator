@@ -63,7 +63,7 @@ class FileOperationsTest(_system: ActorSystem) extends TestKit(_system) with Imp
 
     val patchText = dmp.patch_toText(dmp.patch_make(oldSource, newSource))
 
-    fileActor ! DiffFromClient(maniek, patchText, md5(newSource))
+    fileActor ! DiffFromClient(Client("maniek", maniek), patchText, md5(newSource))
 
     fileActor ! GetText
 
