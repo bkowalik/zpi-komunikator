@@ -74,8 +74,9 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.init();
                 })
 
-    .controller('editorController', function ($scope, $modal, UserService, ConversationService) {
+    .controller('editorController', function ($scope, $modal, $http, UserService, ConversationService) {
                     $scope.sendOnEnterEnabled = true;
+                    $scope.currentUser = UserService.currentUser();
 
                     $scope.$watch(function () {
                         return ConversationService.getConversations()
@@ -114,7 +115,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         }
                     };
 
-                    $scope.openModal = function () {
+                    $scope.openNewConversationModal = function () {
                         var modalInstance = $modal.open(
                             {
                                 templateUrl: 'editor/modals/convModal.html',
@@ -142,6 +143,15 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.codeChange = function(evt, conv) {
                         ConversationService.changeCode(evt.target.innerText, conv);
                         $scope.conversations = ConversationService.getConversations();
+                    };
+
+                    $scope.getMoreUsersOnline = function() {
+                        $http.get('http://54.77.232.158:9000/users/available').success(function (data) {
+
+                            $scope.moreUsersOnline =$(data.online).not($scope.conversations[$scope.actual_tab].contributors).get();
+                        });
+
+                        console.log($scope.moreUsersOnline);
                     };
 
                     $scope.init();

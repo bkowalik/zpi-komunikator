@@ -268,7 +268,7 @@ angular.module('developerCommunicator', [
                      if(message.payload.diff != null) {
                          var diff_tool = new diff_match_patch();
                          var patches = diff_tool.patch_fromText(message.payload.diff);
-                         var textPatched = diff_tool.patch_apply(patches, conversation.code)[0];
+                         var textPatched = diff_tool.patch_apply(patches, conversation.shadow_code)[0];
                          conversation.code = textPatched;
                          conversation.shadow_code = textPatched;
                      }
