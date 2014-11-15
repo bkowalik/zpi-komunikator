@@ -28,7 +28,8 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       val WTFWhoReturnsAnArrayOfObjects = dmp.patch_apply(new util.LinkedList[Patch](patch), text)
       val newText = WTFWhoReturnsAnArrayOfObjects(0).asInstanceOf[String]
 
-      if (md5(newText) == checksum) {
+      val serverChecksum = md5(newText).toUpperCase
+      if (serverChecksum == checksum.toUpperCase) {
         val newShadows = shadows.map(tpl => tpl._1 -> tpl._2) map { case (client1, shadow) =>
           val diff = dmp.patch_make(shadow, newText)
           if (client1 != client)
@@ -40,6 +41,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       else {
         log.warning(s"Patch $diff from $client produced invalid text.")
         log.warning(s"Sending server text to $client")
+        log.warning(s"Client checksum: $checksum and server checksum: $serverChecksum")
         client.actor ! Text(id, text)
       }
     case AddClient(clients) =>
