@@ -42,7 +42,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
         val id = msg.uuid.getOrElse(throw new Exception("Missing field id in DiffSyncType message"))
         val fileActor = diffSyncs(id)
 
-        val ackMsg = new Envelope(msg.to, Option(id), MessageTypes.DiffSyncType, msg.payload) with ESender with EDated {
+        val ackMsg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, msg.payload) with ESender with EDated {
           val from: String = msg.from
           val date: DateTime = new DateTime()
         }
@@ -75,7 +75,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
                 }
 
                 val username = clients.head.username
-                val ackMsg = new Envelope(participantsStr + username, Option(id), MessageTypes.DiffSyncType, Json.toJson(AddUser(username))) with EDated {
+                val ackMsg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(AddUser(username))) with EDated {
                   val date: DateTime = new DateTime()
                 }
 
@@ -92,8 +92,13 @@ trait DiffSyncMessageHandler extends AskTimeout {
         val fileActor = diffSyncs(id)
         val connections = clients(username)
 
+        val remMsg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(CloseSession())) with EDated {
+          val date: DateTime = new DateTime()
+        }
+
         connections foreach { actor =>
-          fileActor ! FileProtocol.RemoveClientByName(username)
+          fileActor ! FileProtocol.RemoveClient(Client(username, actor))
+          actor ! remMsg
         }
 
         val ackMsg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, msg.payload) with EDated with ESender {
