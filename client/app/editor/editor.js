@@ -169,4 +169,64 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.cancel = function () {
                         $modalInstance.dismiss('cancel');
                     };
-                });
+
+        $scope.init = function () {
+            $scope.isFileEnabled = checkFileAPI();
+        };
+
+
+        $scope.init();
+
+        var reader;
+
+        function checkFileAPI() {
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                reader = new FileReader();
+                console.log("FileReader API supported.")
+                return true;
+            } else {
+                console.log("FileReader API not supported.")
+                return false;
+            }
+        }
+
+        /**
+         * read text input
+         */
+        $scope.readText = function(filePath) {
+            var output = "";
+            if (filePath.files && filePath.files[0]) {
+                reader.onload = function (e) {
+                    output = e.target.result;
+
+                    $scope.code = output;
+                    $scope.name = filePath.files[0].name;
+                    $scope.$apply();
+                };
+                reader.readAsText(filePath.files[0]);
+
+            }
+            else if (ActiveXObject && filePath) {
+                try {
+                    reader = new ActiveXObject("Scripting.FileSystemObject");
+                    var file = reader.OpenTextFile(filePath, 1);
+                    output = file.ReadAll();
+                    file.Close();
+
+                    $scope.code = output;
+                    $scope.name = filePath.files[0].name;
+                    $scope.$apply();
+                } catch (e) {
+                    if (e.number == -2146827859) {
+                        alert('Unable to access local files due to browser security settings. ' +
+                        'To overcome this, go to Tools->Internet Options->Security->Custom Level. ' +
+                        'Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"');
+                    }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+    });

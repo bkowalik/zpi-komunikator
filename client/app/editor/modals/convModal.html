@@ -12,8 +12,10 @@
                 <label class="btn btn-success col-sm-3" ng-class="checked[user]? 'btn-danger': 'btn-success'" ng-model="checked[user]" btn-checkbox>{{checked[user]?'Remove':'Add'}}</label>
         </li>
     </ul>
-    <p>Place your code here::</p> 
-    <textarea class="form-control" ng-model="code"></textarea>
+    <p>Place your code here:</p>
+    <textarea class="form-control" ng-model="code"></textarea>   <br />
+    <p ng-if="isFileEnabled">or choose your file:</p>
+    <input type="file" onchange="angular.element(this).scope().readText(this)" ng-if="isFileEnabled" />
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="start()">Start conversation</button>
