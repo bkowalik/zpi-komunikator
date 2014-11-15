@@ -48,7 +48,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
         }
 
         fileActor.ask(FileProtocol.Participants).map {
-          case FileProtocol.ParticipantsList(actors) => actors.filter(_.actor != sender()).map(_.actor).foreach (_ ! ackMsg)
+          case FileProtocol.ParticipantsList(clients) => clients.filter(_.actor != sender()).map(_.actor).foreach (_ ! ackMsg)
           case unknown => log.warning(s"Unknown message in CloseSession: ${unknown.toString}")
         }.recover {
           case ex: Throwable => log.error(ex, "Something went wrong in CloseSession")
@@ -69,6 +69,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
                 val newSessionMsg = new Envelope(participantsStr, Option(id), MessageTypes.DiffSyncType, Json.toJson(NewSession(text))) with EDated {
                   val date: DateTime = new DateTime()
                 }
+
                 clients.map(_.actor).foreach { actor =>
                   actor ! newSessionMsg
                 }

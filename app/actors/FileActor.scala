@@ -51,7 +51,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       sender() ! AddClientAck(id, clients, text, shadows.keys)
       context.become(receiveWith(text, newShadow))
     case RemoveClientByName(clientName) =>
-      context.become(receiveWith(text, shadows.filter(_._2 != clientName)))
+      context.become(receiveWith(text, shadows.filter(_._1.username != clientName)))
     case RemoveClient(client) =>
       context.become(receiveWith(text, shadows - client))
     case GetText => sender() ! TestText(id, text)
