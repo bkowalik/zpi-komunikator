@@ -22,20 +22,22 @@ class ClientTalkActor(val name: String, out: ActorRef, val manager: ActorRef) ex
       manager ! message
     }
 
-    case FileProtocol.Diff(id, changer, text) =>
+    case FileProtocol.Diff(id, changer, text) => {
       log.debug(s"Received diff from $id")
       val msg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Diff(text))) with EDated with ESender {
         val date: DateTime = new DateTime()
         val from: String = changer
       }
       out ! Json.toJson(msg)
+    }
 
-    case FileProtocol.Text(id, text) =>
+    case FileProtocol.Text(id, text) => {
       log.debug(s"Received text from $id")
       val msg = new Envelope(Set.empty, Option(id), MessageTypes.DiffSyncType, Json.toJson(Text(text))) with EDated {
         val date: DateTime = new DateTime()
       }
       out ! Json.toJson(msg)
+    }
 
     case unknown => log.warning(s"Unknown message: ${unknown.toString}")
   }

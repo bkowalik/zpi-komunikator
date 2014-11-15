@@ -28,11 +28,11 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
       val serverChecksum = md5(newText).toUpperCase
       if (serverChecksum == checksum.toUpperCase) {
         val newShadows = shadows.map { case (client1: Client, shadow: String) =>{
-            val diff = dmp.patch_make(shadow, newText)
-            if (client1 != client) {
-              client1.actor ! Diff(id, client.username, dmp.patch_toText(diff))
-            }
-            (client1, newText)
+          val diff = dmp.patch_make(shadow, newText)
+          if (client1 != client) {
+            client1.actor ! Diff(id, client.username, dmp.patch_toText(diff))
+          }
+          (client1, newText)
           }
         }.toMap[Client, String]
         context.become(receiveWith(newText, newShadows))
