@@ -42,7 +42,7 @@ class FileActor(val id: UUID, text: String, shadows: Map[Client, String] = Map.e
         log.warning(s"Patch $diff from $client produced invalid text.")
         log.warning(s"Sending server text to $client")
         log.warning(s"Client checksum: $checksum and server checksum: $serverChecksum")
-        log.warning(s"New text: $newText")
+        log.warning(s"New text: $newText, old: $text")
         client.actor ! Text(id, text)
       }
     case AddClient(clients) =>
