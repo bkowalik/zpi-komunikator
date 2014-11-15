@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body" style="overflow: hidden;">
     <div class="form-group">
-        <input type="text" class="form-control" placeholder="Set conversation name" ng-model="name">
+         <input type="text" class="form-control" placeholder="Set conversation name" ng-model="name">
     </div>
     <p>Select user(s) to start conversation:</p> 
     <ul class="list-group">
@@ -12,6 +12,8 @@
                 <label class="btn btn-success col-sm-3" ng-class="checked[user]? 'btn-danger': 'btn-success'" ng-model="checked[user]" btn-checkbox>{{checked[user]?'Remove':'Add'}}</label>
         </li>
     </ul>
+    <p>Place your code here::</p> 
+    <textarea class="form-control" ng-model="code"></textarea>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="start()">Start conversation</button>

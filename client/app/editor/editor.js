@@ -123,7 +123,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                             });
 
                         modalInstance.result.then(function (obj) {
-                            ConversationService.startConversation(obj.selected, obj.name);
+                            ConversationService.startConversation(obj.selected, obj.name, obj.code);
                         });
                     };
 
@@ -151,6 +151,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.currentUser = UserService.currentUser();
                     $scope.checked = [];
                     $scope.name = null;
+                    $scope.code = "";
 
                     $http.get('http://54.77.232.158:9000/users/available').success(function (data) {
                         $scope.users = data.online;
@@ -159,7 +160,8 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.start = function () {
                         var obj = {
                             selected: $scope.checked,
-                            name: $scope.name != null? $scope.name : $scope.currentUser
+                            name: $scope.name != null? $scope.name : $scope.currentUser,
+                            code: $scope.code
                         };
                         $modalInstance.close(obj);
                     };
