@@ -63,7 +63,7 @@ angular.module('developerCommunicator', [
 
                             switch (server_message["kind"]) {
                                 case "TextMessageType":
-                                     console.log("Message send back to ConvService");
+                                     //console.log("Message send back to ConvService");
                                      if (!message_callbacks[server_message.id]) {
                                          newConversationHandler(server_message);
                                      } else {
@@ -75,14 +75,20 @@ angular.module('developerCommunicator', [
                                     switch (server_message["payload"]["kind"]){
                                         case "Diff":
                                             console.log("Receive diff");
+                                            console.log(server_message["payload"]["diff"]);
+                                            newCodeHandler(server_message);
 
                                             break;
                                         case "Text":
                                             console.log("Receive text");
+                                            console.log(server_message["payload"]["text"]);
+                                            newCodeHandler(server_message);
 
                                             break;
                                         case "NewSession":
                                             console.log("Receive new session");
+                                            console.log(server_message["payload"]["text"]);
+
                                             //odpalenie funkcji ktor podpina nasluchiwanie na tym id i updatowanie kodu w tej rozmowie
                                             newCodeHandler(server_message);
                                             break;
@@ -140,7 +146,7 @@ angular.module('developerCommunicator', [
                      },
 
                      sendDiff: function(patch, hash, conversation){
-                        console.log(patch);
+                        //console.log(patch);
                         if (ws.readyState === 1) {
                              ws.send(JSON.stringify(
                                 {
@@ -155,7 +161,7 @@ angular.module('developerCommunicator', [
                                     }
                                 })
                              );
-                             console.log("New session started.")
+                             console.log("DiffSyncType sent.")
                          } else {
                             console.log("WebSocket closed. Message was not sent.")
                          }
@@ -258,8 +264,18 @@ angular.module('developerCommunicator', [
                     var conversation = _.find(conversations, function (conv) {
                          return conv.id == message.id
                      });
-                    conversation.code = message.payload.text;
-                    conversation.shadow_code = message.payload.text;
+
+                     if(message.payload.diff != null) {
+                         var diff_tool = new diff_match_patch();
+                         var patches = diff_tool.patch_fromText(message.payload.diff);
+                         var textPatched = diff_tool.patch_apply(patches, conversation.code)[0];
+                         conversation.code = textPatched;
+                         conversation.shadow_code = textPatched;
+                     }
+                     else {
+                        conversation.code = message.payload.text;
+                        conversation.shadow_code = message.payload.text;
+                     }
 
                     notifyObservers();
                  };
@@ -310,27 +326,6 @@ angular.module('developerCommunicator', [
 
                  UserService.setNewConversationHandler(setConversation);
                  UserService.setNewCodeHandler(setCode);
-
-                 // var startNewDiffSession = function(conversation) {
-                 //     var ws = UserService.getWs();
-                 //     if (ws.readyState === 1) {
-                 //         ws.send(JSON.stringify(
-                 //                     {
-                 //                         from: UserService.currentUser(),
-                 //                         to: conversation.contributors,
-                 //                         id: conversation.id,
-                 //                         kind: 'DiffSyncType',
-                 //                         payload: {
-                 //                             kind: 'NewSession',
-                 //                             text: conversation.code
-                 //                         }
-                 //                     })
-                 //         );
-                 //         console.log("New session started.")
-                 //     } else {
-                 //         console.log("WebSocket closed. Message was not sent.")
-                 //     }
-                 // };
 
                  return {
                      registerObserverCallback: function (callback) {

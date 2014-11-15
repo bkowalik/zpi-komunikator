@@ -89,6 +89,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         $scope.$apply(function () {
                             $scope.conversations = convs;
                         });
+                        $scope.$apply();
                     };
 
                     // $scope.$on('newConv', function(event,data) {
