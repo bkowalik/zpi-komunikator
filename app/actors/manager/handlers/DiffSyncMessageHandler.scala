@@ -99,7 +99,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
         fileActor.ask(FileProtocol.Participants).map {
           case FileProtocol.ParticipantsList(actors) => {
             if(actors.nonEmpty) {
-              actors.filter(_ != sender()).map(_.actor) foreach (_ ! ackMsg)
+              actors.filter(_.actor != sender()).map(_.actor) foreach (_ ! ackMsg)
             } else {
               fileActor ! PoisonPill
             }
