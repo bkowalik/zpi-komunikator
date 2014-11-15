@@ -43,7 +43,7 @@ trait DiffSyncMessageHandler extends AskTimeout {
         }
 
         fileActor.ask(FileProtocol.Participants).map {
-          case FileProtocol.ParticipantsList(actors) => actors.filter(_ != sender()).map(_.actor).foreach (_ ! ackMsg)
+          case FileProtocol.ParticipantsList(actors) => actors.filter(_.actor != sender()).map(_.actor).foreach (_ ! ackMsg)
           case unknown => log.warning(s"Unknown message in CloseSession: ${unknown.toString}")
         }.recover {
           case ex: Throwable => log.error(ex, "Something went wrong in CloseSession")
