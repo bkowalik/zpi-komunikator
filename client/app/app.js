@@ -86,11 +86,22 @@ angular.module('developerCommunicator', [
 
                                             break;
                                         case "NewSession":
+                                            // TODO: obsługa uzytkownika który został zaproszony do rozmowy, tj otrzymał świeży NewSession
+
                                             console.log("Receive new session");
                                             console.log(server_message["payload"]["text"]);
 
                                             //odpalenie funkcji ktor podpina nasluchiwanie na tym id i updatowanie kodu w tej rozmowie
                                             newCodeHandler(server_message);
+                                            break;
+                                        case "RemoveUser":
+                                            console.log("Receive RemoveUser " + server_message["payload"]["username"]);
+                                            break;
+                                        case "AddUser":
+                                            console.log("Receive AddUser " + server_message["payload"]["username"]);
+                                            break;
+                                        case "CloseSession":
+                                            console.log("Receive CloseSession");
                                             break;
                                     }
                                     break;
@@ -214,8 +225,44 @@ angular.module('developerCommunicator', [
                          newCodeHandler = value;
                      },
 
-                     getWs: function() {
-                         return ws;
+                     removeUser: function(conversation, name) {
+                         if (ws.readyState === 1) {
+                             ws.send(JSON.stringify(
+                                     {
+                                         from: currentUser,
+                                         to: conversation.contributors,
+                                         id: conversation.id,
+                                         kind: 'DiffSyncType',
+                                         payload: {
+                                             kind: 'RemoveUser',
+                                             username: name
+                                         }
+                                     })
+                             );
+                             console.log("DiffSyncType RemoveUser sent.")
+                         } else {
+                             console.log("WebSocket closed. Message was not sent.")
+                         }
+                     },
+
+                     addUser: function(conversation, name) {
+                         if (ws.readyState === 1) {
+                             ws.send(JSON.stringify(
+                                     {
+                                         from: currentUser,
+                                         to: conversation.contributors,
+                                         id: conversation.id,
+                                         kind: 'DiffSyncType',
+                                         payload: {
+                                             kind: 'AddUser',
+                                             username: name
+                                         }
+                                     })
+                             );
+                             console.log("DiffSyncType AddUser sent.")
+                         } else {
+                             console.log("WebSocket closed. Message was not sent.")
+                         }
                      }
                  };
              })

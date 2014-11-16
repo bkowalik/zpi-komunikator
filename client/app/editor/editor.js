@@ -152,15 +152,21 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         });
                     };
 
-                    $scope.addUser = function(name) {
+                    $scope.addUser = function(tab_nr, name) {
+                        UserService.addUser($scope.conversations[tab_nr], name);
+
                         console.log("I'm going to add " + name);
                     };
 
-                    $scope.removeUser = function(name) {
+                    $scope.removeUser = function(tab_nr, name) {
+                        UserService.removeUser($scope.conversations[tab_nr], name);
+
                         console.log("I'm going to kick off " + name);
                     };
 
                     $scope.closeConversation = function(tab_nr, name) {
+                        UserService.removeUser($scope.conversations[tab_nr], name);
+
                         console.log("I'm going to kick off " + name + ' from ' + tab_nr);
                     };
 
