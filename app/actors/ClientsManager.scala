@@ -65,6 +65,13 @@ class ClientsManager() extends Actor with ActorLogging
       newMsg.kind match {
         case TextMessageType => textMessageHandler(newMsg)
         case DiffSyncType => diffSyncHandler(newMsg)
+        case AudiVideoType => {
+          msg.to.filter(msg.from !=).map { username =>
+            clients.get(username).map(_ foreach (_ ! msg)).getOrElse {
+              log.warning(s"Message to absent person from ${msg.from} to $username")
+            }
+          }
+        }
       }
     }
 

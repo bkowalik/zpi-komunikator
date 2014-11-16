@@ -189,6 +189,8 @@ object MessageTypes extends Enumeration {
 
   val KeepAlive = Value("KeepAlive")
 
+  val AudiVideoType = Value("AudioVideoType")
+
   implicit val enumReads: Reads[MessageType] = EnumUtils.enumReads(MessageTypes)
 
   implicit def enumWrites: Writes[MessageType] = EnumUtils.enumWrites
