@@ -140,9 +140,8 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         });
                     };
 
-                    $scope.codeChange = function(evt, conv) {
-                        ConversationService.changeCode(evt.target.innerText, conv);
-                        $scope.conversations = ConversationService.getConversations();
+                    $scope.codeChange = function(conv) {
+                        ConversationService.changeCode(conv);
                     };
 
                     $scope.getMoreUsersOnline = function() {

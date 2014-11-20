@@ -447,10 +447,7 @@ angular.module('developerCommunicator', [
                          return conversations;
                      },
 
-                     changeCode: function(code, conv) {
-                        var conversation = _.find(conversations, function (conv_it) {
-                            return conv_it.id == conv.id
-                        });   
+                     changeCode: function(conversation) {
                         if(changeCount[conversation.id] === undefined) changeCount[conversation.id] = 0;
 
                         if(changeCount[conversation.id] == 10){
@@ -465,7 +462,6 @@ angular.module('developerCommunicator', [
                                 sendCodeToServer(conversation);
                             },1000);
                         }
-                        conversation.code = code;
                      }
                  }
              })

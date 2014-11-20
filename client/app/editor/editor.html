@@ -47,8 +47,8 @@
         <div ng-repeat="conversation in conversations">
             <div id="{{conversation.id}}" ng-show="$index == actual_tab" ng-click="clearNotification(conversation)">
                 <div class="col-lg-8">
-                    <pre><code class="{{conversation.language}}" contenteditable="true" 
-                                data-ng-model="conversation.code" ng-keyup="codeChange($event, conversation)">{{conversation.code}}</code></pre>
+                    <textarea ng-model="conversation.code" 
+                    ng-change="codeChange(conversation)"></textarea>
                 </div>
 
                 {{conversation.$$hashKey}}
