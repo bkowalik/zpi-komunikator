@@ -415,7 +415,7 @@ angular.module('developerCommunicator', [
                      },
 
                      startConversation: function (obj) {
-                         var users = obj.users;
+                         var users = obj.selected;
                          var convName = obj.name;
                          var code = obj.code;
                          users = _.keys(users);
