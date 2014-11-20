@@ -124,7 +124,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                             });
 
                         modalInstance.result.then(function (obj) {
-                            ConversationService.startConversation(obj.selected, obj.name, obj.code);
+                            ConversationService.startConversation(obj);
                         });
                     };
 
@@ -138,10 +138,6 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                                 hljs.highlightBlock(block);
                             });
                         });
-                    };
-
-                    $scope.codeChange = function(conv) {
-                        ConversationService.changeCode(conv);
                     };
 
                     $scope.getMoreUsersOnline = function() {
@@ -177,6 +173,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.checked = [];
                     $scope.name = null;
                     $scope.code = "";
+                    $scope.language = "javascript";
 
                     $http.get('http://54.77.232.158:9000/users/available').success(function (data) {
                         $scope.users = data.online;
@@ -186,7 +183,8 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         var obj = {
                             selected: $scope.checked,
                             name: $scope.name != null? $scope.name : $scope.currentUser,
-                            code: $scope.code
+                            code: $scope.code,
+                            language: $scope.language
                         };
                         $modalInstance.close(obj);
                     };

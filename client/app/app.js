@@ -269,6 +269,7 @@ angular.module('developerCommunicator', [
 
     .factory('ConversationService', function (UserService, UserGraphic, md5) {
                  var conversations = [];
+                 var conversationsEditors = [];
                  var observerCallbacks = [];
 
                  var changeCount = [];
@@ -309,22 +310,39 @@ angular.module('developerCommunicator', [
 
                  var setCode = function(message) {
                     var conversation = _.find(conversations, function (conv) {
-                         return conv.id == message.id
-                     });
+                             return conv.id == message.id
+                         });
+                    if(conversationsEditors[message.id] === undefined){
+                        angular.element(document).ready(function () {
+                             $('.code').last().each(function (i, block) {
+                                var cm = CodeMirror.fromTextArea(block, {
+                                  mode:  "javascript",
+                                  lineNumbers: true,
+                                  smartIndent: true
+                                });
+                                cm.conv = conversation;
+                                cm.on('update', changeCode);
+                                conversationsEditors[cm.conv.id] = cm;
+                             }.bind(this));
+                             setCode(message);
+                         }.bind(this));
+                    }else{
+                         if(message.payload.diff != null) {
+                             var diff_tool = new diff_match_patch();
+                             var patches = diff_tool.patch_fromText(message.payload.diff);
+                             var textPatched = diff_tool.patch_apply(patches, conversation.shadow_code)[0];
 
-                     if(message.payload.diff != null) {
-                         var diff_tool = new diff_match_patch();
-                         var patches = diff_tool.patch_fromText(message.payload.diff);
-                         var textPatched = diff_tool.patch_apply(patches, conversation.shadow_code)[0];
-                         conversation.code = textPatched;
-                         conversation.shadow_code = textPatched;
-                     }
-                     else {
-                        conversation.code = message.payload.text;
-                        conversation.shadow_code = message.payload.text;
-                     }
-
-                    notifyObservers();
+                             conversationsEditors[message.id].setValue(textPatched);
+                             conversationsEditors[message.id].conv.code = textPatched;
+                             conversationsEditors[message.id].conv.shadow_code = textPatched;
+                         }
+                         else {
+                            conversationsEditors[message.id].setValue(message.payload.text);
+                            conversationsEditors[message.id].conv.code = message.payload.text;
+                            conversationsEditors[message.id].conv.shadow_code = message.payload.text;
+                         }
+                        notifyObservers();
+                    }
                  };
 
                  var setConversation = function (message) {
@@ -342,16 +360,10 @@ angular.module('developerCommunicator', [
                      };
                      conversations.push(conversation);
 
-                     notifyObservers();
+                    UserService.addMessageListener(conversation.id, receiveMessage);
+                    UserService.addCodeListener(conversation.id, receiveCode);
 
-                     angular.element(document).ready(function () {
-                         $('pre code').each(function (i, block) {
-                             hljs.highlightBlock(block);
-                         });
-                     });
-
-                     UserService.addMessageListener(conversation.id, receiveMessage);
-                     UserService.addCodeListener(conversation.id, receiveCode);
+                    notifyObservers();  
                  };
 
                  var notifyObservers = function () {
@@ -371,6 +383,29 @@ angular.module('developerCommunicator', [
                      UserService.sendDiff(patch, hash, conv);
                  };
 
+                 var changeCode = function(CM, obj) {
+                    if(CM.conv.code !== CM.getValue()){
+                        console.log("Code has changed");
+                        CM.conv.code = CM.getValue();
+                        var conversation = CM.conv;
+
+                        if(changeCount[conversation.id] === undefined) changeCount[conversation.id] = 0;
+
+                        if(changeCount[conversation.id] == 10){
+                            sendTimeOut[conversation.id] = null;
+                            changeCount[conversation.id] = 0;
+                            sendCodeToServer(conversation);
+                        } 
+                        else{
+                            if(sendTimeOut[conversation.id] != undefined) clearTimeout(sendTimeOut[conversation.id]);
+                            changeCount[conversation.id]++;
+                            sendTimeOut[conversation.id] = setTimeout(function(){
+                                sendCodeToServer(conversation);
+                            },1000);
+                        }
+                    }
+                };
+
                  UserService.setNewConversationHandler(setConversation);
                  UserService.setNewCodeHandler(setCode);
 
@@ -379,7 +414,10 @@ angular.module('developerCommunicator', [
                          observerCallbacks.push(callback);
                      },
 
-                     startConversation: function (users, convName, code) {
+                     startConversation: function (obj) {
+                         var users = obj.users;
+                         var convName = obj.name;
+                         var code = obj.code;
                          users = _.keys(users);
                          users.push(UserService.currentUser());
 
@@ -394,10 +432,17 @@ angular.module('developerCommunicator', [
                          conversations.push(conversation);
 
                          angular.element(document).ready(function () {
-                             $('pre code').each(function (i, block) {
-                                 hljs.highlightBlock(block);
-                             });
-                         });
+                             $('.code').last().each(function (i, block) {
+                                var cm = CodeMirror.fromTextArea(block, {
+                                  mode:  obj.language,
+                                  lineNumbers: true,
+                                  smartIndent: true
+                                });
+                                cm.conv = conversation;
+                                cm.on('update', this.changeCode);
+                                conversationsEditors[cm.conv.id] = cm;
+                             }.bind(this));
+                         }.bind(this));
 
                          UserService.sendMessage(convName, conversation.contributors, conversation.id);
                          UserService.addMessageListener(conversation.id, this.receiveMessage);
@@ -447,22 +492,7 @@ angular.module('developerCommunicator', [
                          return conversations;
                      },
 
-                     changeCode: function(conversation) {
-                        if(changeCount[conversation.id] === undefined) changeCount[conversation.id] = 0;
-
-                        if(changeCount[conversation.id] == 10){
-                            sendTimeOut[conversation.id] = null;
-                            changeCount[conversation.id] = 0;
-                            sendCodeToServer(conversation);
-                        } 
-                        else{
-                            if(sendTimeOut[conversation.id] != undefined) clearTimeout(sendTimeOut[conversation.id]);
-                            changeCount[conversation.id]++;
-                            sendTimeOut[conversation.id] = setTimeout(function(){
-                                sendCodeToServer(conversation);
-                            },1000);
-                        }
-                     }
+                     changeCode: changeCode
                  }
              })
 

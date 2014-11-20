@@ -2,8 +2,20 @@
     <h3 class="modal-title">Start new conversation</h3>
 </div>
 <div class="modal-body" style="overflow: hidden;">
-    <div class="form-group">
-         <input type="text" class="form-control" placeholder="Set conversation name" ng-model="name">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                 <input type="text" class="form-control" placeholder="Set conversation name" ng-model="name">
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <select class="form-control" ng-model="language">
+              <option value="javascript">Javascript</option>
+              <option value="python">Python</option>
+              <option value="php">Php</option>
+              <option value="ruby">Ruby</option>
+            </select>
+        </div>
     </div>
     <p>Select user(s) to start conversation:</p> 
     <ul class="list-group">
