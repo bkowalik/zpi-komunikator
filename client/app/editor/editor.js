@@ -80,7 +80,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.init();
                 })
 
-    .controller('editorController', function ($scope, $modal, $http, UserService, ConversationService, VideoService) {
+    .controller('editorController', function ($scope, $modal, $http, UserService, ConversationService) {
                     $scope.sendOnEnterEnabled = true;
                     $scope.currentUser = UserService.currentUser();
 
@@ -170,13 +170,14 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
 
                         console.log("I'm going to kick off " + name + ' from ' + tab_nr);
                     };
+                    
 
                     var config = {
+                        videosNumber: 1,
                         openSocket:  function (config) {
                             var channel = config.channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
                             var socket = new Firebase('https://devcom.firebaseIO.com/');
                             socket.channel = channel;
-                            console.log(channel);
                             socket.on('child_added', function (data) {
                                 config.onmessage(data.val());
                             });
@@ -189,11 +190,21 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         },
                         onRemoteStream: function (media) {
                             var video = media.video;
-
-                            var video2 = document.querySelectorAll('.videos-container video')[1];
+                            var video2 = document.querySelectorAll('.videos-container video')[this.videosNumber];
+                            var width = 100/(this.videosNumber+1);
+                            this.videosNumber++;
                             video2.setAttribute('src', video.getAttribute("src"));
                             video2.setAttribute('controls', true);
                             video2.setAttribute('id', media.stream.id);
+
+                            document.getElementById('setup-new-room').classList.add("hide");
+
+                            var videos = document.querySelectorAll('.videos-container video');
+                            for (var v=0;v<videos.length;v++){
+                                if(videos[v].hasAttribute("src")){
+                                    videos[v].setAttribute('width', width+"%");
+                                }
+                            }
                             video2.play();
                         },
                         onRemoteStreamEnded: function (stream) {
@@ -215,15 +226,13 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                         }
                     };
 
+                    $scope.newConferenceButton = true;
+
                     var conferenceUI = conference(config);
 
                     angular.element(document).ready(function () {
-
-                        $scope.videosContainer = document.createElement('div');
-                        $scope.roomsList = document.createElement('div');
-
                         $scope.startVideo = function (conv) {
-                            console.log("dupa");
+                            $scope.newConferenceButton = false;
                             this.disabled = true;
                             captureUserMedia(function () {
                                 conferenceUI.createRoom({
@@ -237,13 +246,12 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                             var video = document.querySelectorAll('.videos-container video')[0];
                             video.setAttribute('autoplay', true);
                             video.setAttribute('controls', true);
-                            video.setAttribute('width', 320);
-                            video.setAttribute('height', 240);
-                            //$scope.videosContainer.insertBefore(video, $scope.videosContainer.firstChild);
+                            video.setAttribute('width', "50%");
 
                             getUserMedia({
                                 video: video,
                                 onsuccess: function (stream) {
+                                    stream.user = UserService.currentUser();
                                     config.attachStream = stream;
                                     video.setAttribute('muted', true);
                                     callback();

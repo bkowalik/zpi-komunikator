@@ -50,16 +50,15 @@
                     <textarea class="code" ng-model="conversation.code"></textarea>
                 </div>
                 <div class="col-lg-4">
-                    <div>
-                        <button id="setup-new-room" ng-click="startVideo(conversation)">Setup New Conference</button>
-                        <table style="width: 100%;" id="rooms-list" ng-bind-html="roomsList"></table>
+                    <div class="videos">
+                        <button id="setup-new-room" ng-show="newConferenceButton" class="btn btn-info btn-sm" ng-click="startVideo(conversation)">Setup New Conference</button>
                         <div class="videos-container">     
-                            <video></video>
-                            <video></video>
-                            <video></video>
-                            <video></video>
-                            <video></video>
-                            <video></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
                         </div>
                     </div>
                     <div class="panel panel-primary">

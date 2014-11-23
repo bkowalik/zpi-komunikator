@@ -145,3 +145,19 @@ pre {
     50%  {background: rgb(190, 0, 0);}
     100%   {background: #006687;}
 }
+
+.videos-container{
+    overflow: hidden;
+}
+
+.videos-container video{
+    float: left;
+}
+
+.videos{
+    text-align: center;
+}
+
+.videos #setup-new-room{
+    margin-bottom: 10px;
+}
