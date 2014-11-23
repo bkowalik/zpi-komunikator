@@ -2,6 +2,12 @@
 
 angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
 
+    .filter('to_trusted', ['$sce', function($sce){
+        return function(text) {
+            return $sce.trustAsHtml(text);
+        };
+    }])
+
     .config(['$routeProvider', function ($routeProvider) {
                 $routeProvider
                     .when('/editor',
@@ -74,7 +80,7 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.init();
                 })
 
-    .controller('editorController', function ($scope, $modal, $http, UserService, ConversationService) {
+    .controller('editorController', function ($scope, $modal, $http, UserService, ConversationService, VideoService) {
                     $scope.sendOnEnterEnabled = true;
                     $scope.currentUser = UserService.currentUser();
 
@@ -164,6 +170,86 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
 
                         console.log("I'm going to kick off " + name + ' from ' + tab_nr);
                     };
+
+                    var config = {
+                        openSocket:  function (config) {
+                            var channel = config.channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+                            var socket = new Firebase('https://devcom.firebaseIO.com/');
+                            socket.channel = channel;
+                            console.log(channel);
+                            socket.on('child_added', function (data) {
+                                config.onmessage(data.val());
+                            });
+                            socket.send = function (data) {
+                                this.push(data);
+                            }
+                            config.onopen && setTimeout(config.onopen, 1);
+                            socket.onDisconnect().remove();
+                            return socket;
+                        },
+                        onRemoteStream: function (media) {
+                            var video = media.video;
+
+                            var video2 = document.querySelectorAll('.videos-container video')[1];
+                            video2.setAttribute('src', video.getAttribute("src"));
+                            video2.setAttribute('controls', true);
+                            video2.setAttribute('id', media.stream.id);
+                            video2.play();
+                        },
+                        onRemoteStreamEnded: function (stream) {
+                            var video = document.getElementById(stream.id);
+                            if (video) video.parentNode.removeChild(video);
+                        },
+                        onRoomFound: function (room) {
+                            var alreadyExist = document.querySelector('button[data-broadcaster="' + room.broadcaster + '"]');
+                            if (alreadyExist) return;
+
+                            var broadcaster = room.broadcaster;
+                            var roomToken = room.roomToken;
+                            captureUserMedia(function () {
+                                conferenceUI.joinRoom({
+                                    roomToken: roomToken,
+                                    joinUser: broadcaster
+                                });
+                            });
+                        }
+                    };
+
+                    var conferenceUI = conference(config);
+
+                    angular.element(document).ready(function () {
+
+                        $scope.videosContainer = document.createElement('div');
+                        $scope.roomsList = document.createElement('div');
+
+                        $scope.startVideo = function (conv) {
+                            console.log("dupa");
+                            this.disabled = true;
+                            captureUserMedia(function () {
+                                conferenceUI.createRoom({
+                                    roomName: conv.id
+                                });
+                            });
+                        };
+                    });
+
+                    var captureUserMedia = function(callback) {
+                            var video = document.querySelectorAll('.videos-container video')[0];
+                            video.setAttribute('autoplay', true);
+                            video.setAttribute('controls', true);
+                            video.setAttribute('width', 320);
+                            video.setAttribute('height', 240);
+                            //$scope.videosContainer.insertBefore(video, $scope.videosContainer.firstChild);
+
+                            getUserMedia({
+                                video: video,
+                                onsuccess: function (stream) {
+                                    config.attachStream = stream;
+                                    video.setAttribute('muted', true);
+                                    callback();
+                                }
+                            });
+                        }
 
                     $scope.init();
                 })
