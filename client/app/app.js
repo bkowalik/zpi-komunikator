@@ -639,6 +639,10 @@ angular.module('developerCommunicator', [
                     $scope.userLogout = function () {
                         $scope.user = UserService.logout();
                     }
+
+                    if (!UserService.isLoggedIn()) {
+                        window.location.hash = "/login"
+                    }
                 });
 
 var guid = (function () {
