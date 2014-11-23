@@ -79,7 +79,7 @@
                                                 {{entry.name}}
                                             </strong>
                                             <small ng-class-even="'pull-right text-muted'" ng-class-odd="'text-muted'">
-                                                <span class="glyphicon glyphicon-time"></span>{{entry.time}}
+                                                <span class="glyphicon glyphicon-time"></span>{{entry.time | date:'HH:mm:ss'}}
                                             </small>
                                             <strong class="pull-right primary-font" ng-hide="$odd">
                                                 {{entry.name}}
