@@ -19,13 +19,18 @@ mkdir -p opt/devcom
 mkdir -p usr/bin
 
 cp ../client/devcom_client opt/devcom/devcom
+chmod +x opt/devcom/devcom
+
 cp /usr/lib/node-webkit/nw.pak opt/devcom/nw.pak
+cp /usr/lib/node-webkit/icudtl.dat opt/devcom/icudtl.dat
 
 cat > usr/bin/devcom <<EOF
 #!/bin/sh
 
 /opt/devcom/devcom
 EOF
+
+chmod +x usr/bin/devcom
 
 cat > DEBIAN/control <<EOF
 Source: devcom
