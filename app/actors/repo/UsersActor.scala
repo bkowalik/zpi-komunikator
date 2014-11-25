@@ -33,7 +33,7 @@ class UsersActor(usersRepository: UsersRepository, salt: String) extends Actor w
   }.map(_.exists(usr => password.isBcrypted(usr.password)))
 
   def createAcc(username: String, password: String, email: String): Future[Boolean] = Future {
-    usersRepository.createUser(username, password, email)
+    usersRepository.createUser(username, password.bcrypt(salt), email)
   }
 
   def allUsers: Future[Iterable[String]] = Future {
