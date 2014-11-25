@@ -5,25 +5,25 @@
                     <legend>Change your password</legend>
                     <div class="form-group">
                         <div class="col-lg-6 col-lg-offset-3">
-                            <input type="password" class="form-control" id="oldPassword"
+                            <input type="password" class="form-control" id="oldPassword" ng-model="old"
                                    ng-required="true" placeholder="Old password">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-6 col-lg-offset-3">
-                            <input type="password" class="form-control" id="newPassword1"
+                            <input type="password" class="form-control" id="newPassword1" ng-model="new"
                                    ng-required="true" placeholder="New password">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-6 col-lg-offset-3">
-                            <input type="password" class="form-control" id="newPassword2"
+                            <input type="password" class="form-control" id="newPassword2" ng-model="new2"
                                    ng-required="true"placeholder="Repeat new password">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-6 col-lg-offset-3">
-                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                            <button type="submit" class="btn btn-primary btn-block" ng-click="changePassword()">Submit</button>
                         </div>
                     </div>
                 </fieldset>
