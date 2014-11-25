@@ -1,8 +1,12 @@
-<div class="container">
+<div class="container" id="login">
     <div class="row">
 
         <div class="alert alert-dismissable alert-danger" ng-if="errorOccured">
             <strong>There is a problem with sign in.</strong> {{errorMessage}}. Try again later.
+        </div>
+
+        <div class="alert alert-dismissable alert-success" ng-if="registerSuccess">
+            <strong>Successfully registered!</strong> You can log in now, {{registerlogin}}.
         </div>
 
         <div class="col-md-6 col-md-offset-3">
@@ -32,7 +36,7 @@
                                 Access
                             </button>
                             <p class="help-block">
-                                <a class="pull-left text-muted" href="registration.html">
+                                <a class="pull-left " href="#" id="registerButton">
                                     <small>Sign Up</small>
                                 </a>
                                 <a class="pull-right text-muted" href="#" id="toggle">
@@ -73,4 +77,84 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="container-fluid" id="register" style="display: none">
+    <form name="registerForm" ng-submit="clickRegister()">
+
+    <section class="container">
+        <div class="container-page">
+            <div class="col-md-6">
+                <h3 class="dark-grey">Registration</h3>
+
+                <div class="form-group col-lg-12">
+                    <label>Username</label>
+                    <div class="form-group input-group">
+                            <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-user" ></span>
+                            </span>
+                        <input class="form-control" placeholder="Login" ng-model="register.login" required ng-minlength="3" >
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-6">
+                    <label>Password</label>
+                    <div class="form-group input-group" >
+                            <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                            </span>
+                        <input class="form-control" placeholder="Password" type="password" value="" ng-model="register.password" required  ng-minlength="6" >
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-6" ng-class="register.password!=register.password2 ? 'has-error' : ''">
+                    <label>Repeat Password</label> <label ng-if="register.password!=register.password2"> Different passwords</label>
+                    <div class="form-group input-group">
+                            <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                            </span>
+                        <input class="form-control" placeholder="Password" type="password" value="" ng-model="register.password2" required  ng-minlength="6" >
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-6" >
+                    <label>Email Address</label>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">@</span>
+                        <input class="form-control" placeholder="Email" type="email"  autofocus="" ng-model="register.email" required  >
+                    </div>
+                </div>
+
+                <div class="form-group col-lg-6" ng-class="register.email!=register.email2 ? 'has-error' : ''">
+                    <label>Repeat Email Address</label>    <label ng-if="register.email!=register.email2"> Different emails</label>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon">@</span>
+                        <input class="form-control" placeholder="Email" type="email2"  autofocus="" ng-model="register.email2" required  >
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+                <h3 class="dark-grey">Terms and Conditions</h3>
+                <p>
+                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                </p>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+                <p>
+                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+
+                <button type="submit" class="btn btn-primary" id="sendButton" ng-class="registerForm.$valid ? '' : 'disabled'">Register</button>
+                <button class="btn btn-primary" id="backRegisterButton">Back</button>
+            </div>
+        </div>
+    </section>
+        </form>
+
 </div>

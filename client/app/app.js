@@ -8,7 +8,8 @@ angular.module('developerCommunicator', [
     'developerCommunicator.editor',
     'developerCommunicator.settings',
     'developerCommunicator.history',
-    'developerCommunicator.login'
+    'developerCommunicator.login',
+    'developerCommunicator.register'
 ])
     .config(['$routeProvider', function ($routeProvider) {
                 $routeProvider

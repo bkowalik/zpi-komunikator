@@ -52,6 +52,36 @@ angular.module('developerCommunicator.login', ['ngRoute'])
                         // });
                     };
 
+                    $scope.clickRegister = function () {
+                        console.log("clicked");
+
+                        $http.defaults.withCredentials = true;
+                        $http.post(
+                            'http://54.77.232.158:9000/users/register',
+                            {
+                                username: $scope.register.login,
+                                password: $scope.register.password,
+                                email: $scope.register.email
+                            },
+                            {
+                                withCredentials: true
+                            })
+                            .success(function (data, status, headers, config) {
+                                         $scope.errorOccured = false;
+                                         $scope.errorMessage = '';
+                                         $scope.registerSuccess = true;
+
+                                         $("#register").toggle('500');
+                                         $("#login").toggle('500');
+                                     })
+                            .error(function (data, status, headers, config) {
+                                       console.log("Error when login");
+                                       $scope.registerSuccess = false;
+                                       $scope.errorOccured = true;
+                                       $scope.errorMessage = data.general[0];
+                                   });
+                    };
+
                     $scope.init = function () {
                         $('#toggle').click(function (e) {
                             e.preventDefault();
@@ -61,6 +91,18 @@ angular.module('developerCommunicator.login', ['ngRoute'])
                         $('#access').click(function (e) {
                             e.preventDefault();
                             $('div#form-toggle').toggle('500');
+                        });
+
+                        $('#registerButton').click(function (e) {
+                            e.preventDefault();
+                            $("#login").toggle('500');
+                            $("#register").toggle('500');
+                        });
+
+                        $('#backRegisterButton').click(function (e) {
+                            e.preventDefault();
+                            $("#register").toggle('500');
+                            $("#login").toggle('500');
                         });
                     };
 
