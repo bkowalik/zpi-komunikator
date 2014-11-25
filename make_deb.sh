@@ -6,9 +6,9 @@
 
 pushd client
 
+rm -f my_application.nw
 zip -r my_application.nw *
 rm -f devcom_client
-rm -f my_application.nw
 cat /usr/bin/nw my_application.nw > devcom_client
 
 popd
