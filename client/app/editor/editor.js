@@ -168,6 +168,8 @@ angular.module('developerCommunicator.editor', ['ngRoute', 'ui.bootstrap'])
                     $scope.closeConversation = function(tab_nr, name) {
                         UserService.removeUser($scope.conversations[tab_nr], name);
 
+                        $scope.conversations.splice(tab_nr, 1);
+
                         console.log("I'm going to kick off " + name + ' from ' + tab_nr);
                     };
                     
