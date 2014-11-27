@@ -1,0 +1,163 @@
+/* app css stylesheet */
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+.no-bottom-margin {
+    margin-bottom: 0;
+}
+
+pre {
+    padding: 0;
+}
+
+.menu-clearfix {
+    display: inline;
+    float: left;
+}
+
+/* fill */
+
+/* chat */
+
+.chat {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.chat li {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted #B3A9A9;
+}
+
+.chat li.left .chat-body {
+    margin-left: 60px;
+}
+
+.chat li.right .chat-body {
+    margin-right: 60px;
+}
+
+.chat li .chat-body p {
+    margin: 0;
+    color: #777777;
+}
+
+.panel .slidedown .glyphicon, .chat .glyphicon {
+    margin-right: 5px;
+}
+
+.panel-body {
+    overflow-y: scroll;
+    max-height: 650px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+    background-color: #555;
+}
+
+/* contacts */
+
+@media (max-width: 767px) {
+    .visible-xs {
+        display: inline-block !important;
+    }
+
+    .block {
+        display: block !important;
+        width: 100%;
+        height: 1px !important;
+    }
+}
+
+.title {
+    display: inline-block;
+    font-size: 1.7em;
+    font-weight: bold;
+    padding: 5px 15px;
+}
+
+.name {
+    font-size: 1.7em;
+    font-weight: 700;
+}
+
+.c-info {
+    padding: 5px 10px;
+    font-size: 1.25em;
+}
+
+.offline {
+    background-color: #eeeeee;
+}
+
+.online {
+    color: #109d24;
+}
+
+.blink a{
+    background: red;
+    animation: myfirst 2s;
+    -moz-animation: myfirst 2s; /* Firefox */
+    -webkit-animation: myfirst 2s; /* Safari and Chrome */
+    -o-animation: myfirst 2s; /* Opera */
+        
+    -moz-animation-iteration-count: infinite;
+    -webkit-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+}
+
+@keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-moz-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-webkit-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+@-o-keyframes myfirst {
+    0%   {background: #006687;}
+    50%  {background: rgb(190, 0, 0);}
+    100%   {background: #006687;}
+}
+
+.videos-container{
+    overflow: hidden;
+}
+
+.videos-container video{
+    float: left;
+}
+
+.videos{
+    text-align: center;
+}
+
+.videos #setup-new-room{
+    margin-bottom: 10px;
+}

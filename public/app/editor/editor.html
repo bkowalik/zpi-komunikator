@@ -1,0 +1,107 @@
+<div class="raw" ng-init="actual_tab = 0">
+    <div class="navbar navbar-inverse">
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+            <ul class="nav navbar-nav">
+                <li ng-repeat="conversation in conversations"  class="{{actual_tab == $index ? 'active':''}}{{conversation.new_message ? ' blink':''}}">
+                    <a href ng-click="$parent.actual_tab=$index; clearNotification(conversation)" class="menu-clearfix">
+                        {{conversation.name}}
+                    </a>
+                    <a href ng-click="closeConversation($index, currentUser)" class="menu-clearfix">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href ng-click="openNewConversationModal()"><span class="glyphicon glyphicon-new-window"></span> New conversation</a></li>
+
+                    <li ng-if="conversations[0]"><a>
+
+                        | </a></li>
+
+                    <li class="dropdown" ng-if="conversations[0]">
+                        <a class="dropdown-toggle" data-toggle="dropdown" ng-click="getMoreUsersOnline()"><span class="glyphicon glyphicon-plus-sign"></span> See online<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li ng-if="moreUsersOnline.length === 0"><a><span class="glyphicon glyphicon-plus-sign"></span> No more users online</a></li>
+                            <li ng-repeat="userOnline in moreUsersOnline"><a><span class="glyphicon glyphicon-plus-sign"></span> {{userOnline}}</a></li>
+                        </ul>
+                    </li>
+
+                    <!--<li class="dropdown" ng-if="conversations[0] && conversations[actual_tab].contributors.length > 1">-->
+                        <!--<a class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-remove-sign"></span> Remove user<b class="caret"></b></a>-->
+                        <!--<ul class="dropdown-menu">-->
+                            <!--<li ng-repeat="user in conversations[actual_tab].contributors | filter:'!'+currentUser"><a ng-click="removeUser(actual_tab, user)"><span class="glyphicon glyphicon-remove-sign"></span> {{user}}</a></li>-->
+                        <!--</ul>-->
+                    <!--</li>-->
+            </ul>
+        </div>
+    </div>
+
+    <div id="myTabContent" class="tab-content">
+        <div ng-repeat="conversation in conversations">
+            <div id="{{conversation.id}}" ng-show="$index == actual_tab" ng-click="clearNotification(conversation)">
+                <div class="col-lg-8">
+                    <textarea class="code" ng-model="conversation.code"></textarea>
+                </div>
+                <div class="col-lg-4">
+                    <div class="videos">
+                        <button id="setup-new-room" ng-show="newConferenceButton" class="btn btn-info btn-sm" ng-click="startVideo(conversation)">Setup New Conference</button>
+                        <div class="videos-container">     
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                            <video width="0"></video>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-comment"></span> Chat
+                        </div>
+                        <div class="panel-body">
+                            <ul class="chat">
+                                <li ng-repeat="entry in conversation.chat" ng-class-even="'left clearfix'" ng-class-odd="'right clearfix'">
+                                <span ng-class-even="'pull-left chat-img'" ng-class-odd="'pull-right chat-img'">
+                                    <img ng-src="http://placehold.it/50/{{entry.avatarColor}}/fff&text={{entry.avatarInitials}}" alt="User Avatar" class="img-circle"/>
+                                </span>
+
+                                    <div class="chat-body clearfix">
+                                        <div class="header">
+                                            <strong class="primary-font" ng-hide="$even">
+                                                {{entry.name}}
+                                            </strong>
+                                            <small ng-class-even="'pull-right text-muted'" ng-class-odd="'text-muted'">
+                                                <span class="glyphicon glyphicon-time"></span>{{entry.time | date:'HH:mm:ss'}}
+                                            </small>
+                                            <strong class="pull-right primary-font" ng-hide="$odd">
+                                                {{entry.name}}
+                                            </strong>
+                                        </div>
+                                        <p>
+                                            {{entry.text}}
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="input-group">
+                                <input id="btn-input" type="text" class="form-control input-sm"
+                                       placeholder="Type your message here..." ng-model="$parent.message" ng-enter="sendMessageOnEnter(conversation)" />
+                                <div class="input-group-btn">
+                                    <button class="btn btn-info btn-sm" id="btn-chat" ng-click="sendMessage(conversation)">
+                                        Send
+                                    </button>
+
+                                </div>
+                            </div>
+                            <!--<div class="checkbox">-->
+                                <!--<label><input type="checkbox" class="checkbox" ng-checked="true" ng-model="parent.sendOnEnterEnabled">Send on RETURN key</label>-->
+                            <!--</div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+{
+  "name": "Developer Communicator",
+  "description": "Developer Communicator",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "angular": "1.2.x",
+    "angular-route": "1.2.x",
+    "angular-loader": "1.2.x",
+    "angular-mocks": "~1.2.x",
+    "angular-md5": "~0.1.7",
+    "bootstrap": "3.3.0",
+    "bootswatch": "~3.3.0",
+    "highlightjs": "~8.3.0",
+    "underscore": "~1.7.0",
+    "angular-bootstrap": "~0.11.2",
+    "nedb": "*",
+    "codemirror": "~4.8.0"
+  }
+}
