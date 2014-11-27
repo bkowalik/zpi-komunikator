@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+  <head>
+    <title>DevCom</title>
+<script src="app/bower_components/jquery/dist/jquery.js"></script>
+    <script>
+      //var socket = io.connect('http://localhost:9000/client');
+      $( document ).ready(function() {
+        var webSocket = {
+          nick : null,
+          ws : null,
+          init : function(nick){
+            this.nick = nick;
+            this.ws = new WebSocket('wss://54.77.232.158/client/'+nick);
+            //this.ws = new WebSocket('ws://localhost:9000/client/'+nick);
+            this.ws.onopen = function(){
+              console.log('Connection open!');
+              document.getElementById("test").innerHTML = "TADA";
+            };
+            this.ws.onmessage = function(e){
+              var server_message = e.data;
+              console.log(server_message);
+              console.log("aaa");
+            };
+            this.ws.onerror = function (evt) {
+              console.log("ERR: " + evt.data);
+            };
+          },
+          sendMessage : function(message){
+            if (this.ws.readyState === 1) {
+              this.ws.send(JSON.stringify({
+                      to: ["testowy1"],
+                      kind: 'TextMessageType',
+                      payload: {
+                        message : message
+                      }
+              }));
+              console.log("poszło")
+            }
+            else{
+              console.log("not ready");
+            }
+          }
+        }
+
+        document.getElementById("register_user").addEventListener('click',function(){
+          var nick_input = document.getElementById("nick");
+          nick_input.disabled = true;
+          document.getElementById("register_user").disabled = true;
+          webSocket.init(nick_input.value);
+          console.log(webSocket.ws)
+        });
+
+        document.getElementById("send_message").addEventListener('click',function(){
+          var message = document.getElementById("message").value;
+          webSocket.sendMessage(message);
+          console.log(webSocket);
+        });
+
+      });
+    </script>
+  </head>
+  <body>
+  <nav class="navbar navbar-default" role="navigation">
+  
+  </nav>
+    <div id="content">
+      <div id="inner-content">
+        <h2>Test</h2>
+        <p>Najpierw się zaloguj a potem ślij wiadomości</p>
+        <input type="text" id="nick" /><button id="register_user">Loguj się z tym!</button><br />
+        <input type="text" id="message" /> <button id="send_message">Ślij wiadomość</button>
+
+        <div id="message_board"></div>
+        <span id="test"></span>
+      </div>
+    </div>
+    <script type="text/javascript">
+
+    </script>
+  </body>
+</html>
